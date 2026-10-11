@@ -1,20 +1,39 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<h1>Quiz</h1>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<p>Dupla: {{ nome_dupla }}</p>
+<p>ID: {{ dupla_id }}</p>
 
-    <title>Quiz Maratona Enem</title>
+<p>{{ pergunta[1] }}</p>
 
-    <link rel="preconnect href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet"href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+<form action="/responder" method="post">
+<input type="hidden" name="dupla_id" value="{{ dupla_id }}">
+<input type="hidden" name="pergunta_id" value="{{ pergunta[0] }}">
 
-<body>
+<label>
+    <input type="radio" name="alternativa" value="A" required>
+    A) {{ pergunta[2] }}
+</label>
 
-    <script src="{{ url_for('static', filename='js/jogo.js') }}"></script>
-</body>
-</html>
+<label>
+    <input type="radio" name="alternativa" value="B">
+    B) {{ pergunta[3] }}
+</label>
+
+<label>
+    <input type="radio" name="alternativa" value="C">
+    C) {{ pergunta[4] }}
+</label>
+
+<label>
+    <input type="radio" name="alternativa" value="D">
+    D) {{ pergunta[5] }}
+</label>
+
+<button type="submit">Responder</button>
+
+</form>
+
+<p>A) {{ pergunta[2] }}</p>
+<p>B) {{ pergunta[3] }}</p>
+<p>C) {{ pergunta[4] }}</p>
+<p>D) {{ pergunta[5] }}</p>
