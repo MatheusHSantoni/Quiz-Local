@@ -1,19 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <title>Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maratona Enem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet"href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
 
-    <h1>Entrar no Quiz</h1>
+    <div class="wrap entrada-page">
 
-    <form action="/jogo" method="post">
-        <label for="dupla">Nome da dupla:</label>
-        <input type="text" id="dupla" name="dupla" required>
+        <header class="topo">
+            <div class="lockup">
+                <span class="l1">MARATONA</span>
+                <span class="l2">ENEM</span>
+                <span class="turbo">
+                    <b><small>modo</small>TURBO</b>
+                </span>
+            </div>
+            <img class="ep"src="{{ url_for('static', filename='img/estudo-play.png') }}"alt="Estudo Play">
+        </header>
 
-        <button type="submit">Entrar</button>
-    </form>
+
+        <main class="entrada">
+
+            <section class="entrada-texto">
+
+                <span class="ao-vivo">Quiz Maratona Enem</span>
+
+                <h1><span class="lar">Prepare sua</span>
+                    <span class="rox">dupla</span>
+                </h1>
+
+
+                <p class="sub">Informe o nome dos dois participantes para entrar no quiz.</p>
+            </section>
+
+
+            <section class="painel entrada-card">
+
+                <h2>Identificação da dupla</h2>
+
+                <form
+                    action="{{ url_for('participantes.entrar') }}"
+                    method="post"
+                    class="form-entrada"
+                >
+
+                    <div class="campo"><label for="participante_1">Participante 1</label>
+
+                        <input
+                            type="text"
+                            id="participante_1"
+                            name="participante_1"
+                            placeholder="Digite o primeiro nome"
+                            autocomplete="off"
+                            required>
+                    </div>
+
+
+                    <div class="campo">
+                        <label for="participante_2">Participante 2</label>
+
+                        <input
+                            type="text"
+                            id="participante_2"
+                            name="participante_2"
+                            placeholder="Digite o segundo nome"
+                            autocomplete="off"
+                            required
+                        >
+                    </div>
+
+                    <button class="btn entrada-btn" type="submit">Entrar no quiz</button>
+                </form>
+            </section>
+        </main>
+
+        <footer class="rodape">Maratona Enem · Estudo Play
+        </footer>
+    </div>
 
 </body>
 </html>

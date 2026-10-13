@@ -1,7 +1,8 @@
-import sqlite3 
+import sqlite3
 from pathlib import Path
 
 CAMINHO_BANCO = Path(__file__).parent / "database.db"
+
 
 def criar_banco():
     conexao = sqlite3.connect(CAMINHO_BANCO)
@@ -10,7 +11,8 @@ def criar_banco():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS duplas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome_dupla TEXT NOT NULL,
+            participante_1 TEXT NOT NULL,
+            participante_2 TEXT NOT NULL,
             criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
         )""")
 
@@ -22,6 +24,7 @@ def criar_banco():
             alternativa_b TEXT NOT NULL,
             alternativa_c TEXT NOT NULL,
             alternativa_d TEXT NOT NULL,
+            alternativa_e TEXT NOT NULL,
             alternativa_correta TEXT NOT NULL
         )""")
 
@@ -31,6 +34,8 @@ def criar_banco():
             dupla_id INTEGER NOT NULL,
             pergunta_id INTEGER NOT NULL,
             alternativa_escolhida TEXT NOT NULL,
+            correta INTEGER NOT NULL,
+            pontos INTEGER NOT NULL DEFAULT 0,
             respondida_em DATETIME DEFAULT CURRENT_TIMESTAMP,
 
             FOREIGN KEY (dupla_id) REFERENCES duplas(id),
@@ -38,10 +43,25 @@ def criar_banco():
 
             UNIQUE (dupla_id, pergunta_id)
         )""")
-    
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS configuracoes (
+            id INTEGER PRIMARY KEY,
+            ranking_liberado INTEGER NOT NULL DEFAULT 0
+        )""")
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO configuracoes (
+            id,
+            ranking_liberado
+        )
+        VALUES (1, 0)
+    """)
+
     conexao.commit()
     conexao.close()
 
+
 if __name__ == "__main__":
     criar_banco()
-    print("Banco criado com sucesso.")
+    print("Banco atualizado com sucesso.")

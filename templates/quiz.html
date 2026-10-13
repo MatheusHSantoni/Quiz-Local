@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz Maratona Enem</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+    <svg width="0" height="0" aria-hidden="true">
+        <defs>
+            <symbol id="raio" viewBox="0 0 24 24">
+                <path
+                    d="M13.5 2 5 13.2h6l-1.5 8.8L19 10.6h-6.2z"
+                    fill="#fff"
+                    stroke="#f68d1e"
+                    stroke-width="1"
+                />
+            </symbol>
+
+            <symbol id="play" viewBox="0 0 40 40">
+                <path d="M9 6.5c0-2.6 2.8-4.2 5-2.9l20 12.5c2.1 1.3 2.1 4.4 0 5.8l-20 12.5c-2.2 1.4-5-.2-5-2.9z"/>
+            </symbol>
+        </defs>
+    </svg>
+
+
+    <div class="wrap">
+
+        <header class="topo">
+            <a class="lockup" href="#sala">
+                <span class="l1">MARATONA</span>
+                <span class="l2">ENEM</span>
+
+                <span class="turbo">
+                    <b>
+                        <small>modo</small>
+                        TURBO
+                    </b>
+
+                    <span class="bolt">
+                        <svg><use href="#raio"></use></svg>
+                    </span>
+                </span>
+            </a>
+
+            <img
+                class="ep"
+                src="{{ url_for('static', filename='img/estudo-play.png') }}"
+                alt="Estudo Play"
+            >
+        </header>
+
+
+        <section class="heroi">
+
+            <div class="heroi-txt">
+                <span class="ao-vivo">
+                    <span class="pulso"></span>
+                    Sala ao vivo
+                </span>
+
+                <h1>
+                    <span class="lar">Quiz da Maratona</span>
+                    <span class="rox">Enem</span>
+                </h1>
+
+                <p class="sub">
+                    Responda às perguntas da Maratona Enem e aguarde a divulgação dos resultados.
+                </p>
+
+                <div class="metas">
+                    <div class="meta">
+                        <b>100</b>
+                        <span>pontos por acerto</span>
+                    </div>
+                </div>
+
+                <div class="setas">
+                    <svg style="fill: var(--laranja)">
+                        <use href="#play"></use>
+                    </svg>
+
+                    <svg style="fill: var(--laranja); opacity: .7">
+                        <use href="#play"></use>
+                    </svg>
+
+                    <svg style="fill: var(--laranja); opacity: .4">
+                        <use href="#play"></use>
+                    </svg>
+                </div>
+            </div>
+
+
+            <div class="heroi-foto">
+                <div class="tri">
+                    <svg viewBox="0 0 400 420">
+                        <path
+                            d="M120 70c0-30 30-46 56-31l200 140c24 17 24 50 0 66L176 385c-26 16-56 0-56-31z"
+                            fill="#f4aa12" />
+
+                        <path
+                            d="M90 60c0-32 34-50 62-33l210 150c26 18 26 56 0 74L152 401c-28 18-62-1-62-33z"
+                            fill="#514076" />
+                    </svg>
+                </div>
+
+                <img class="aluno" src="{{ url_for('static', filename='img/aluno.png') }}" alt=""></div>
+
+        </section>
+
+
+        <main class="sala" id="sala">
+            <section class="painel">
+
+                <div class="painel-topo">
+                    <h2 class="rotulo">
+                        <span class="bolt">
+                            <svg><use href="#raio"></use></svg>
+                        </span>
+                        Participantes
+                    </h2>
+                </div>
+
+
+                <ul class="pessoas">
+
+                    <li class="pessoa eu">
+                        <div class="av">{{ dupla["participante_1"][0] }}</div>
+
+                        <div>
+                            <div class="nome">{{ dupla["participante_1"] }}</div>
+
+                            <div class="local">Participante 1</div>
+                        </div>
+                    </li>
+
+
+                    <li class="pessoa eu">
+                        <div class="av">{{ dupla["participante_2"][0] }}</div>
+                        <div>
+                            <div class="nome">{{ dupla["participante_2"] }}</div>
+                            <div class="local">Participante 2</div>
+                        </div>
+                    </li>
+                </ul>
+
+            </section>
+
+
+            <!-- PERGUNTA -->
+            <section class="painel q">
+
+                <div class="q-cab">
+                    <h2 class="rotulo">
+                        <span class="bolt">
+                            <svg><use href="#raio"></use></svg>
+                        </span>
+
+                        Pergunta
+                    </h2>
+                </div>
+
+
+                <p class="enunciado">{{ pergunta["enunciado"] }}</p>
+
+                <p class="comando">Escolha uma alternativa e confirme sua resposta.</p>
+
+
+                <form
+                    action="{{ url_for('participantes.responder') }}" method="post">
+
+                    <input
+                        type="hidden"
+                        name="dupla_id"
+                        value="{{ dupla_id }}">
+
+                    <input
+                        type="hidden"
+                        name="pergunta_id"
+                        value="{{ pergunta['id'] }}">
+
+
+                    {% set alternativas = [
+                        ('A', pergunta["alternativa_a"]),
+                        ('B', pergunta["alternativa_b"]),
+                        ('C', pergunta["alternativa_c"]),
+                        ('D', pergunta["alternativa_d"]),
+                        ('E', pergunta["alternativa_e"])
+                    ] %}
+
+
+                    <ul class="opcoes">
+
+                        {% for letra, texto in alternativas %}
+
+                            <li>
+                                <label class="op">
+
+                                    <span class="letra">{{ letra }}</span>
+                                    <span>{{ texto }}</span>
+                                    <input
+                                        type="radio"
+                                        name="alternativa"
+                                        value="{{ letra }}"
+                                        required>
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+
+                    <div class="q-pe">
+                        <button class="btn" type="submit">
+                            Confirmar resposta
+
+                            <svg viewBox="0 0 40 40">
+                                <use href="#play"></use>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+
+        <footer class="rodape">
+            Maratona Enem · Estudo Play
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jogo.js') }}"></script>
+
+</body>
+</html>

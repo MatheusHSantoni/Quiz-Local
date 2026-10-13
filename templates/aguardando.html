@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aguardando resultado</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> 
+</head>
+
+<body>
+
+    <div class="wrap">
+        <header class="topo">
+            <div class="lockup">
+                <span class="l1">MARATONA</span>
+                <span class="l2">ENEM</span>
+            </div>
+
+            <img
+                class="ep"
+                src="{{ url_for('static', filename='img/estudo-play.png') }}"
+                alt="Estudo Play">
+        </header>
+        <main>
+            <section class="painel">
+
+                <h1>Quiz finalizado!</h1>
+                <p>
+                    {{ dupla["participante_1"] }} e
+                    {{ dupla["participante_2"] }},
+                    suas respostas foram registradas.
+                </p>
+
+                <p>Aguarde a liberação do ranking pela organização.</p>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
