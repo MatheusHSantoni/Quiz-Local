@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin - Maratona Enem</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="wrap">
+        <header class="topo">
+
+            <div class="lockup">
+                <span class="l1">MARATONA</span>
+                <span class="l2">ENEM</span>
+            </div>
+
+            <img
+                class="ep" src="{{ url_for('static', filename='img/estudo-play.png') }}" alt="Estudo Play">
+
+        </header>
+        <main>
+
+           {% with mensagens = get_flashed_messages() %}
+                {% if mensagens %}
+                    {% for mensagem in mensagens %}
+                        <p class="admin-mensagem">{{ mensagem }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <section class="painel">
+
+                <h1>Painel administrativo</h1>
+                <p> Gerencie as perguntas do quiz e controle a liberação do ranking.</p>
+
+            </section>
+
+            <section class="admin-resumo">
+
+                <!-- PERGUNTAS -->
+                <div class="painel">
+                    <h2>Perguntas</h2>
+                    <strong>{{ total_perguntas }}</strong>
+                    <p>perguntas cadastradas</p>
+                    <a class="btn" href="{{ url_for('admin.perguntas') }}">Gerenciar perguntas</a>
+                </div>
+
+                <div class="painel">
+                    <h2>Duplas</h2>
+                    <strong>{{ total_duplas }}</strong>
+                    <p>duplas participantes</p>
+                </div>
+
+
+                <!-- RANKING -->
+                <div class="painel">
+                    <h2>Ranking</h2>
+                    {% if ranking_liberado %}
+
+                        <strong>Liberado</strong>
+                        <p>Os participantes já podem visualizar o ranking.</p>
+                        <form
+                            action="{{ url_for('admin.bloquear_ranking') }}" method="post">
+                            <button class="btn ranking-btn-secundario" type="submit">Bloquear ranking </button>
+                        </form>
+                    {% else %}
+
+                        <strong> Bloqueado </strong>
+                        <p> Os participantes ainda não podem visualizar o resultado.</p>
+                        <form action="{{ url_for('admin.liberar_ranking') }}" method="post">
+                            <button class="btn" type="submit">Liberar ranking</button>
+                        </form>
+
+                    {% endif %}
+
+                </div>
+            </section>
+
+            <section class="admin-acoes">
+
+                <a class="btn" href="{{ url_for('admin.nova_pergunta') }}">Nova pergunta</a>
+                <a class="btn ranking-btn-secundario" href="{{ url_for('admin.logout') }}">Sair </a>
+
+            </section>
+        </main>
+
+        <footer class="rodape">Painel administrativo · Maratona Enem</footer>
+
+    </div>
+</body>
+</html>

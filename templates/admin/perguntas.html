@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Perguntas - Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="wrap">
+        <header class="topo">
+
+            <a class="lockup" href="{{ url_for('admin.dashboard') }}">
+                <span class="l1">MARATONA</span>
+                <span class="l2">ENEM</span>
+            </a>
+            <img
+                class="ep" src="{{ url_for('static', filename='img/estudo-play.png') }}" alt="Estudo Play">
+        </header>
+        <main>
+
+            {% with mensagens = get_flashed_messages() %}
+                {% if mensagens %}
+                    {% for mensagem in mensagens %}
+
+                        <p class="admin-mensagem">{{ mensagem }}</p>
+
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+
+            <section class="painel">
+
+                <div class="painel-topo">
+
+                    <div>
+                        <h1>Perguntas</h1>
+                        <p>{{ perguntas|length }} perguntas cadastradas.</p>
+                    </div>
+                    <a class="btn" href="{{ url_for('admin.nova_pergunta') }}">Nova pergunta</a>
+                </div>
+
+
+                {% if perguntas %}
+
+                    <div class="admin-perguntas">
+                        {% for pergunta in perguntas %}
+                            <article class="admin-pergunta">
+
+                                <div class="admin-pergunta-topo">
+                                    <strong>Questão {{ pergunta["id"] }}</strong>
+                                    <span>Correta:{{ pergunta["alternativa_correta"] }}</span>
+                                </div>
+
+
+                                <p class="admin-enunciado">{{ pergunta["enunciado"] }}</p>
+
+
+                                <ol
+                                    class="admin-alternativas"type="A">
+                                    <li>{{ pergunta["alternativa_a"] }}</li>
+                                    <li>{{ pergunta["alternativa_b"] }}</li>
+                                    <li>{{ pergunta["alternativa_c"] }}</li>
+                                    <li>{{ pergunta["alternativa_d"] }}</li>
+                                    <li>{{ pergunta["alternativa_e"] }}</li>
+
+                                </ol>
+
+
+                                <div class="admin-pergunta-acoes">
+
+                                    <a class="btn" href="{{ url_for('admin.editar_pergunta', pergunta_id=pergunta['id']) }}">Editar</a>
+                                    <form
+                                        action="{{ url_for(
+                                            'admin.excluir_pergunta',
+                                            pergunta_id=pergunta['id']
+                                        ) }}"
+                                        method="post"
+                                        onsubmit="return confirm('Tem certeza que deseja excluir esta pergunta?');">
+
+                                        <button class="btn ranking-btn-secundario" type="submit">Excluir</button>
+                                    </form>
+                                </div>
+
+                            </article>
+                        {% endfor %}
+                    </div>
+
+                {% else %}
+
+                    <p>Nenhuma pergunta cadastrada ainda.</p>
+
+                {% endif %}
+
+
+                <div class="admin-voltar">
+
+                    <a class="btn ranking-btn-secundario" href="{{ url_for('admin.dashboard') }}">Voltar ao painel</a>
+
+                </div>
+            </section>
+        </main>
+
+        <footer class="rodape">Painel administrativo · Maratona Enem</footer>
+
+    </div>
+</body>
+</html>
