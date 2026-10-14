@@ -63,9 +63,8 @@ def logout():
     return redirect(url_for("admin.login"))
 
 
-# ==========================================================
 # DASHBOARD
-# ==========================================================
+
 
 @admin_bp.route("/")
 @admin_obrigatorio
