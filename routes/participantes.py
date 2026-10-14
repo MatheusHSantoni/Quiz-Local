@@ -165,15 +165,12 @@ def responder():
 
 @participantes_bp.route("/aguardando/<int:dupla_id>")
 def aguardando(dupla_id):
+
     conexao = conectar()
     cursor = conexao.cursor()
 
-    cursor.execute(
-        """
-        SELECT
-            id,
-            participante_1,
-            participante_2
+    cursor.execute("""
+        SELECT id, participante_1, participante_2
         FROM duplas
         WHERE id = ?
         """,
@@ -181,16 +178,23 @@ def aguardando(dupla_id):
 
     dupla = cursor.fetchone()
 
-    conexao.close()
-
     if dupla is None:
+        conexao.close()
         return "Dupla não encontrada.", 404
 
-    return render_template(
-        "aguardando.html",
-        dupla=dupla
-    )
+    cursor.execute("""
+        SELECT ranking_liberado
+        FROM configuracoes
+        WHERE id = 1
+        """)
 
+    configuracao = cursor.fetchone()
+    conexao.close()
+
+    if (configuracao is not None and configuracao["ranking_liberado"] == 1):
+        return redirect(url_for("participantes.ranking"))
+
+    return render_template("aguardando.html", dupla=dupla)
 
 @participantes_bp.route("/ranking")
 def ranking():

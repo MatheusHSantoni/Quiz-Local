@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar pergunta - Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="wrap">
+
+        <header class="topo">
+            <a class="lockup" href="{{ url_for('admin.dashboard') }}">
+                <span class="l1">MARATONA</span>
+                <span class="l2">ENEM</span>
+            </a>
+            <img class="ep" src="{{ url_for('static', filename='img/estudo-play.png') }}" alt="Estudo Play">
+        </header>
+
+        <main>
+            <section class="painel">
+
+                <h1>Editar pergunta</h1>
+                <p>Altere os dados da questão{{ pergunta["id"] }}.</p>
+
+                {% with mensagens = get_flashed_messages() %}
+
+                    {% if mensagens %}
+
+                        {% for mensagem in mensagens %}
+
+                            <p class="admin-mensagem">{{ mensagem }}</p>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                {% endwith %}
+
+
+                <form
+                    method="post"
+                    class="form-entrada">
+                    <div class="campo">
+
+                        <label for="enunciado">Enunciado</label>
+                        <textarea
+                            id="enunciado"
+                            name="enunciado"
+                            rows="5"
+                            required
+                        >{{ pergunta["enunciado"] }}</textarea>
+
+                    </div>
+
+
+                    <div class="campo">
+                        <label for="alternativa_a">Alternativa A</label>
+                        <input
+                            id="alternativa_a"
+                            name="alternativa_a"
+                            type="text"
+                            value="{{ pergunta['alternativa_a'] }}"
+                            required>
+                    </div>
+
+
+                    <div class="campo">
+                        <label for="alternativa_b">Alternativa B</label>
+                        <input
+                            id="alternativa_b"
+                            name="alternativa_b"
+                            type="text"
+                            value="{{ pergunta['alternativa_b'] }}"
+                            required>
+                    </div>
+
+
+                    <div class="campo">
+                        <label for="alternativa_c">Alternativa C</label>
+                        <input
+                            id="alternativa_c"
+                            name="alternativa_c"
+                            type="text"
+                            value="{{ pergunta['alternativa_c'] }}"
+                            required>
+                    </div>
+
+
+                    <div class="campo">
+                        <label for="alternativa_d"> Alternativa D </label>
+                        <input
+                            id="alternativa_d"
+                            name="alternativa_d"
+                            type="text"
+                            value="{{ pergunta['alternativa_d'] }}"
+                            required>
+                    </div>
+
+
+                    <div class="campo">
+                        <label for="alternativa_e">Alternativa E </label>
+                        <input
+                            id="alternativa_e"
+                            name="alternativa_e"
+                            type="text"
+                            value="{{ pergunta['alternativa_e'] }}"
+                            required>
+                    </div>
+
+                    <div class="campo">
+
+                        <label for="alternativa_correta"> Alternativa correta </label>
+
+                        <select
+                            id="alternativa_correta"
+                            name="alternativa_correta"
+                            required>
+
+                            <option value="A" {% if pergunta["alternativa_correta"] == "A" %} selected {% endif %}>A</option>
+                            <option value="B" {% if pergunta["alternativa_correta"] == "B" %} selected {% endif %}> B </option>
+                            <option value="C" {% if pergunta["alternativa_correta"] == "C" %} selected {% endif %} >C</option>
+                            <option value="D" {% if pergunta["alternativa_correta"] == "D" %} selected {% endif %} >D </option>
+                            <option value="E" {% if pergunta["alternativa_correta"] == "E" %} selected {% endif %}>E </option>
+                        </select>
+                    </div>
+
+
+                    <div class="admin-pergunta-acoes">
+
+                        <button class="btn" type="submit">Salvar alterações</button>
+                        <a class="btn ranking-btn-secundario" href="{{ url_for('admin.perguntas') }}">Cancelar</a>
+
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer class="rodape">Painel administrativo · Maratona Enem</footer>
+    </div>
+</body>
+</html>
