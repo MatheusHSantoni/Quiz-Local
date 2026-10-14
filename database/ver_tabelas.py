@@ -1,15 +1,16 @@
 from conexao import conectar
 
+
 conexao = conectar()
 cursor = conexao.cursor()
 
-cursor.execute(
-    "SELECT name FROM sqlite_master WHERE type='table'"
-)
+cursor.execute("""
+    PRAGMA table_info(duplas)
+    """)
 
-tabelas = cursor.fetchall()
+colunas = cursor.fetchall()
 
-for tabela in tabelas:
-    print(tabela)
+for coluna in colunas:
+    print(dict(coluna))
 
 conexao.close()

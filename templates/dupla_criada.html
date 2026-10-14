@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Time criado</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="wrap entrada-page">
+
+        <header class="topo">
+
+            <div class="lockup">
+                <span class="l1">MARATONA</span>
+                <span class="l2">ENEM</span>
+                <span class="turbo">
+                    <b>
+                        <small>modo</small> TURBO
+                    </b>
+                </span>
+            </div>
+
+            <img class="ep" src="{{ url_for('static', filename='img/estudo-play.png') }}" alt="Estudo Play">
+
+        </header>
+
+        <main class="entrada">
+
+            <section class="entrada-texto">
+
+                <span class="ao-vivo">Cadastro concluído</span>
+
+                <h1>
+                    <span class="lar">Time</span>
+                    <span class="rox">criado!</span>
+                </h1>
+
+                <p class="sub">Guarde o número do seu time. Você vai usá-lo para acessar a mesma dupla novamente.</p>
+
+            </section>
+
+            <section class="painel entrada-card">
+
+                <h2>Time {{ dupla["id"] }}</h2>
+
+                <p>
+                    {{ dupla["participante_1"] }}
+                    +
+                    {{ dupla["participante_2"] }}
+                </p>
+
+                <div class="campo">
+
+                    <label>Número do time</label>
+
+                    <input
+                        type="text"
+                        value="{{ dupla['id'] }}"
+                        readonly>
+
+                </div>
+
+                <p class="sub">Anote ou tire uma foto do número do time.</p>
+
+                <a
+                    class="btn entrada-btn"
+                    href="{{ url_for('participantes.quiz', dupla_id=dupla['id']) }}">
+                    Continuar para o quiz
+                </a>
+
+            </section>
+
+        </main>
+
+        <footer class="rodape">Maratona Enem · Estudo Play</footer>
+
+    </div>
+</body>
+</html>
