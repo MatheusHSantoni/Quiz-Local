@@ -1,14 +1,22 @@
 import sqlite3
 from pathlib import Path
 
+
 CAMINHO_BANCO = Path(__file__).parent / "database.db"
 
 
 def criar_banco():
     conexao = sqlite3.connect(CAMINHO_BANCO)
     cursor = conexao.cursor()
-
     cursor.execute("""
+        PRAGMA foreign_keys = ON
+        """)
+
+
+    # DUPLAS
+
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS duplas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             participante_1 TEXT NOT NULL,
@@ -16,7 +24,10 @@ def criar_banco():
             criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
         )""")
 
-    cursor.execute("""
+    # PERGUNTAS
+
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS perguntas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             enunciado TEXT NOT NULL,
@@ -28,7 +39,10 @@ def criar_banco():
             alternativa_correta TEXT NOT NULL
         )""")
 
-    cursor.execute("""
+    # RESPOSTAS
+
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS respostas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             dupla_id INTEGER NOT NULL,
@@ -38,25 +52,35 @@ def criar_banco():
             pontos INTEGER NOT NULL DEFAULT 0,
             respondida_em DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-            FOREIGN KEY (dupla_id) REFERENCES duplas(id),
-            FOREIGN KEY (pergunta_id) REFERENCES perguntas(id),
+            FOREIGN KEY (dupla_id)
+                REFERENCES duplas(id),
 
-            UNIQUE (dupla_id, pergunta_id)
-        )""")
+            FOREIGN KEY (pergunta_id)
+                REFERENCES perguntas(id),
 
-    cursor.execute("""
+            UNIQUE (
+                dupla_id,
+                pergunta_id
+            ))""")
+
+
+    # CONFIGURAÇÕES
+
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS configuracoes (
             id INTEGER PRIMARY KEY,
             ranking_liberado INTEGER NOT NULL DEFAULT 0
         )""")
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT OR IGNORE INTO configuracoes (
             id,
             ranking_liberado
         )
         VALUES (1, 0)
-    """)
+        """)
 
     conexao.commit()
     conexao.close()
@@ -64,4 +88,5 @@ def criar_banco():
 
 if __name__ == "__main__":
     criar_banco()
+
     print("Banco atualizado com sucesso.")

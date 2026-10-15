@@ -2,24 +2,20 @@ from flask import (Blueprint,render_template,request,redirect,url_for)
 from database.conexao import conectar
 from services.ranking import buscar_ranking
 
-
 participantes_bp = Blueprint("participantes",__name__)
 
 # ENTRADA
 
 @participantes_bp.route("/")
 def index():
-
     return render_template("index.html")
 
-
+# CRIAR NOVO TIME
 @participantes_bp.route("/entrar", methods=["POST"])
 def entrar():
 
-    participante_1 = (
-        request.form.get("participante_1") or "").strip()
+    participante_1 = (request.form.get("participante_1") or "").strip()
     participante_2 = (request.form.get("participante_2") or "").strip()
-
 
     if not participante_1 or not participante_2:
         return ("Informe o nome dos dois participantes.",400)
@@ -40,10 +36,76 @@ def entrar():
         ))
 
     dupla_id = cursor.lastrowid
-
     conexao.commit()
     conexao.close()
-    return redirect(url_for("participantes.quiz",dupla_id=dupla_id))
+
+    return redirect(url_for("participantes.dupla_criada",dupla_id=dupla_id))
+
+# CONFIRMAÇÃO DO TIME
+
+@participantes_bp.route("/dupla-criada/<int:dupla_id>")
+def dupla_criada(dupla_id):
+
+    conexao = conectar()
+    cursor = conexao.cursor()
+    cursor.execute(
+        """
+        SELECT
+            id,
+            participante_1,
+            participante_2
+        FROM duplas
+        WHERE id = ?
+        """,
+        (dupla_id,))
+
+    dupla = cursor.fetchone()
+    conexao.close()
+
+    if dupla is None:
+        return ("Time não encontrado.",404)
+
+    return render_template("dupla_criada.html",dupla=dupla)
+
+# ENTRAR EM TIME EXISTENTE
+
+@participantes_bp.route("/entrar-dupla",methods=["POST"])
+def entrar_dupla():
+
+    dupla_id = request.form.get("dupla_id")
+    if not dupla_id:
+        return ("Informe o número do time.",400)
+
+    try:
+        dupla_id = int(dupla_id)
+
+    except ValueError:
+        return ("Número do time inválido.",400)
+
+    if dupla_id <= 0:
+        return ("Número do time inválido.",400)
+
+    conexao = conectar()
+    cursor = conexao.cursor()
+    cursor.execute(
+        """
+        SELECT
+            id,
+            participante_1,
+            participante_2
+        FROM duplas
+        WHERE id = ?
+        """,
+        (dupla_id,))
+
+    dupla = cursor.fetchone()
+    conexao.close()
+
+    if dupla is None:
+        return ("Time não encontrado.",404)
+
+    return redirect(
+        url_for("participantes.quiz",dupla_id=dupla["id"]))
 
 # QUIZ
 
@@ -65,12 +127,10 @@ def quiz(dupla_id):
 
     dupla = cursor.fetchone()
 
-
     if dupla is None:
         conexao.close()
 
-        return ("Dupla não encontrada.",404)
-
+        return ("Time não encontrado.",404)
 
     cursor.execute(
         """
@@ -98,25 +158,23 @@ def quiz(dupla_id):
 
     if pergunta is None:
         return redirect(
-            url_for("participantes.aguardando",dupla_id=dupla_id))
-
+            url_for(
+                "participantes.aguardando",
+                dupla_id=dupla_id))
 
     return render_template("quiz.html",dupla=dupla,dupla_id=dupla_id,pergunta=pergunta)
 
-
-
 # RESPOSTA
 
-@participantes_bp.route("/responder", methods=["POST"])
+@participantes_bp.route("/responder",methods=["POST"])
 def responder():
 
     dupla_id = request.form.get("dupla_id")
     pergunta_id = request.form.get("pergunta_id")
-
     alternativa = (request.form.get("alternativa") or "").strip().upper()
-    if not dupla_id or not pergunta_id or not alternativa:
-        return ("Dados da resposta incompletos.",400)
 
+    if (not dupla_id or not pergunta_id or not alternativa ):
+        return ("Dados da resposta incompletos.",400)
 
     try:
         dupla_id = int(dupla_id)
@@ -124,7 +182,6 @@ def responder():
 
     except ValueError:
         return ("Dados da resposta inválidos.",400)
-
 
     if alternativa not in [
         "A",
@@ -135,12 +192,10 @@ def responder():
     ]:
         return ("Alternativa inválida.",400)
 
-
     conexao = conectar()
     cursor = conexao.cursor()
 
-
-    # Verifica se a dupla realmente existe
+    # Verifica se o time existe
     cursor.execute(
         """
         SELECT id
@@ -150,15 +205,12 @@ def responder():
         (dupla_id,))
 
     dupla = cursor.fetchone()
-
-
     if dupla is None:
         conexao.close()
 
-        return ("Dupla não encontrada.",404)
+        return ("Time não encontrado.",404)
 
-
-    # Busca a próxima pergunta ainda não respondida
+    # Busca a próxima pergunta não respondida
     cursor.execute(
         """
         SELECT
@@ -177,30 +229,27 @@ def responder():
 
     pergunta_atual = cursor.fetchone()
 
-
-    # Não existem mais perguntas
     if pergunta_atual is None:
         conexao.close()
 
-        return redirect(url_for("participantes.aguardando",dupla_id=dupla_id))
+        return redirect(
+            url_for(
+                "participantes.aguardando",
+                dupla_id=dupla_id))
 
-
-    # Garante que a resposta pertence à pergunta atual
+    # Impede responder uma pergunta diferente da atual
     if pergunta_id != pergunta_atual["id"]:
         conexao.close()
 
-        return ("Esta não é a pergunta atual da dupla.",400)
+        return ("Esta não é a pergunta atual do time.",400)
 
     alternativa_correta = (pergunta_atual["alternativa_correta"])
     correta = int(alternativa == alternativa_correta)
 
-
     pontos = (
         100
         if correta
-        else 0
-    )
-
+        else 0)
 
     cursor.execute(
         """
@@ -224,12 +273,7 @@ def responder():
     conexao.commit()
     conexao.close()
 
-
-    return redirect(
-        url_for(
-            "participantes.quiz",
-            dupla_id=dupla_id
-        ))
+    return redirect(url_for("participantes.quiz",dupla_id=dupla_id))
 
 # AGUARDANDO RESULTADO
 
@@ -238,8 +282,6 @@ def aguardando(dupla_id):
 
     conexao = conectar()
     cursor = conexao.cursor()
-
-
     cursor.execute(
         """
         SELECT
@@ -253,12 +295,10 @@ def aguardando(dupla_id):
 
     dupla = cursor.fetchone()
 
-
     if dupla is None:
         conexao.close()
 
-        return ("Dupla não encontrada.",404)
-
+        return ("Time não encontrado.",404)
 
     cursor.execute(
         """
@@ -268,15 +308,12 @@ def aguardando(dupla_id):
         """)
 
     configuracao = cursor.fetchone()
-
     conexao.close()
 
-
     if (configuracao is not None and configuracao["ranking_liberado"] == 1):
-        return redirect(url_for("participantes.ranking"))
+        return redirect( url_for("participantes.ranking"))
 
     return render_template("aguardando.html",dupla=dupla)
-
 
 # RANKING
 
@@ -296,16 +333,12 @@ def ranking():
 
     conexao.close()
 
-
     if configuracao is None:
         return ("Configuração do ranking não encontrada.",500)
-
 
     if configuracao["ranking_liberado"] == 0:
         return ("O ranking ainda não foi liberado.",403)
 
-
     classificacao = buscar_ranking()
-
 
     return render_template("ranking.html",ranking=classificacao)
