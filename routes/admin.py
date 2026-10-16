@@ -1,6 +1,5 @@
 import os
 from functools import wraps
-
 from flask import (Blueprint,render_template,request,redirect,url_for,session,flash)
 from database.conexao import conectar
 
@@ -47,7 +46,6 @@ def login():
         if (usuario == usuario_admin and senha == senha_admin):
             session.clear()
             session["admin_logado"] = True
-
             return redirect(url_for("admin.dashboard"))
 
         flash("Usuário ou senha inválidos.")
@@ -64,8 +62,6 @@ def logout():
 
 
 # DASHBOARD
-
-
 @admin_bp.route("/")
 @admin_obrigatorio
 def dashboard():

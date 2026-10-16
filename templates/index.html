@@ -5,138 +5,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Maratona Enem</title>
+    <title>Quiz em Duplas</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
 </head>
 
-<body>
+<body class="entrada-page">
 
-    <div class="wrap entrada-page">
+    <header class="topo">
+        <img src="{{ url_for('static',filename='img/estudo-play.png') }}" alt="Estudo Play" class="logo"> 
+    </header>
 
-        <header class="topo">
+    <main class="entrada">
+        <section class="entrada-texto">
+            <div class="entrada-apresentacao">
+                <div class="entrada-conteudo">
 
-            <div class="lockup">
-                <span class="l1">MARATONA</span>
-                <span class="l2">ENEM</span>
-                <span class="turbo">
-                    <b>
-                        <small>modo</small>TURBO
-                    </b>
-                </span>
+                    <span class="ao-vivo">Quiz em Duplas</span>
+
+                    <h1>
+                        <span class="lar">Prepare sua</span>
+                        <span class="rox">dupla!</span>
+                    </h1>
+
+                    <p class="sub"> Cadastre os participantes, escolha uma senha e comece o desafio. </p>
+
+                </div>
+
+                <div class="entrada-personagem">
+                    <div class="entrada-forma"></div>
+                    <img src="{{ url_for('static',filename='img/aluno.png') }}" alt="" class="entrada-aluno"></div>
             </div>
+        </section>
 
-            <img class="ep" src="{{ url_for('static', filename='img/estudo-play.png') }}" alt="Estudo Play">
+        <section class="painel entrada-card">
 
-        </header>
+            <h2>Criar nova dupla</h2>
 
+            <form
+                class="form-entrada"
+                action="{{ url_for('participantes.entrar') }}"
+                method="POST">
 
-        <main class="entrada">
+                <div class="campo">
 
-            <section class="entrada-texto">
+                    <label for="participante_1">Participante 1</label>
 
-                <span class="ao-vivo">Quiz Maratona Enem</span>
+                    <input
+                        type="text"
+                        id="participante_1"
+                        name="participante_1"
+                        placeholder="Digite o nome"
+                        autocomplete="name"
+                        required>
+                </div>
 
-                <h1>
-                    <span class="lar">Prepare sua</span>
-                    <span class="rox">dupla</span>
-                </h1>
+                <div class="campo">
 
-                <p class="sub">Cadastre uma nova dupla ou entre usando o número do seu time.</p>
+                    <label for="participante_2">Participante 2 </label>
 
-            </section>
+                    <input
+                        type="text"
+                        id="participante_2"
+                        name="participante_2"
+                        placeholder="Digite o nome"
+                        autocomplete="name"
+                        required>
+                </div>
 
+                <div class="campo">
+                    <label for="senha"> Senha </label>
 
-            <!-- CRIAR NOVA DUPLA -->
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Mínimo de 6 caracteres"
+                        minlength="6"
+                        autocomplete="new-password"
+                        required>
+                </div>
 
-            <section class="painel entrada-card">
+                <button class="btn entrada-btn"
+                    type="submit"> Criar time 
+                </button>
 
-                <h2>Criar nova dupla</h2>
+            </form>
 
-                <p class="sub">Primeiro acesso? Cadastre os dois participantes.</p>
-
-                <form
-                    action="{{ url_for('participantes.entrar') }}"
-                    method="post"
-                    class="form-entrada">
-
-                    <div class="campo">
-
-                        <label for="participante_1">Participante 1</label>
-
-                        <input
-                            type="text"
-                            id="participante_1"
-                            name="participante_1"
-                            placeholder="Digite o primeiro nome"
-                            autocomplete="off"
-                            required>
-
-                    </div>
-
-
-                    <div class="campo">
-
-                        <label for="participante_2">Participante 2</label>
-
-                        <input
-                            type="text"
-                            id="participante_2"
-                            name="participante_2"
-                            placeholder="Digite o segundo nome"
-                            autocomplete="off"
-                            required>
-
-                    </div>
-
-                    <button class="btn entrada-btn" type="submit">Criar time</button>
-
-                </form>
-
-            </section>
-
-            <!-- ENTRAR EM TIME EXISTENTE -->
-
-            <section class="painel entrada-card">
-
-                <h2>Já tenho um time</h2>
-
-                <p class="sub">Digite o número recebido no primeiro cadastro.</p>
-
-                <form
-                    action="{{ url_for('participantes.entrar_dupla') }}"
-                    method="post"
-                    class="form-entrada">
-
-                    <div class="campo">
-
-                        <label for="dupla_id">Número do time</label>
-
-                        <input
-                            type="number"
-                            id="dupla_id"
-                            name="dupla_id"
-                            placeholder="Ex.: 7"
-                            min="1"
-                            inputmode="numeric"
-                            autocomplete="off"
-                            required>
-
-                    </div>
-
-                    <button class="btn entrada-btn" type="submit">Entrar no quiz</button>
-                </form>
-            </section>
-
-        </main>
-
-        <footer class="rodape">Maratona Enem · Estudo Play</footer>
-
-    </div>
-
+            <div class="entrada-existente">
+                <p class="sub"> Já possui um time cadastrado?</p>
+                <a class="btn entrada-btn" href="{{ url_for('participantes.login_time') }}"> Entrar no meu time </a>
+            </div>
+        </section>
+    </main>
 </body>
-
 </html>

@@ -1,53 +1,77 @@
-from flask import (Blueprint,render_template,request,redirect,url_for)
+from flask import (Blueprint,render_template,request,redirect,url_for,session)
+from pwdlib import PasswordHash
 from database.conexao import conectar
 from services.ranking import buscar_ranking
 
-participantes_bp = Blueprint("participantes",__name__)
 
-# ENTRADA
+participantes_bp = Blueprint("participantes",__name__)
+password_hash = PasswordHash.recommended()
 
 @participantes_bp.route("/")
 def index():
     return render_template("index.html")
 
-# CRIAR NOVO TIME
-@participantes_bp.route("/entrar", methods=["POST"])
+
+# CADASTRO DO TIME
+@participantes_bp.route("/cadastro")
+def cadastro():
+    return render_template("cadastro.html")
+
+
+@participantes_bp.route("/entrar",methods=["POST"])
 def entrar():
 
     participante_1 = (request.form.get("participante_1") or "").strip()
     participante_2 = (request.form.get("participante_2") or "").strip()
+    senha = request.form.get("senha") or ""
 
-    if not participante_1 or not participante_2:
-        return ("Informe o nome dos dois participantes.",400)
+    if not participante_1 or not participante_2 or not senha:
+        return ("Informe os dois participantes e uma senha.",400)
+
+    if len(senha) < 6:
+        return ("A senha deve ter pelo menos 6 caracteres.",400)
+
+    senha_hash = password_hash.hash(senha)
 
     conexao = conectar()
     cursor = conexao.cursor()
+
     cursor.execute(
         """
         INSERT INTO duplas (
             participante_1,
-            participante_2
+            participante_2,
+            senha_hash
         )
-        VALUES (?, ?)
+        VALUES (?, ?, ?)
         """,
         (
             participante_1,
-            participante_2
-        ))
+            participante_2,
+            senha_hash))
 
     dupla_id = cursor.lastrowid
+
     conexao.commit()
     conexao.close()
 
-    return redirect(url_for("participantes.dupla_criada",dupla_id=dupla_id))
+    session["dupla_id"] = dupla_id
+
+    return redirect(
+        url_for("participantes.dupla_criada",dupla_id=dupla_id))
+
 
 # CONFIRMAÇÃO DO TIME
 
 @participantes_bp.route("/dupla-criada/<int:dupla_id>")
 def dupla_criada(dupla_id):
 
+    if session.get("dupla_id") != dupla_id:
+        return ("Acesso não autorizado.",403)
+
     conexao = conectar()
     cursor = conexao.cursor()
+
     cursor.execute(
         """
         SELECT
@@ -60,6 +84,7 @@ def dupla_criada(dupla_id):
         (dupla_id,))
 
     dupla = cursor.fetchone()
+
     conexao.close()
 
     if dupla is None:
@@ -67,14 +92,21 @@ def dupla_criada(dupla_id):
 
     return render_template("dupla_criada.html",dupla=dupla)
 
-# ENTRAR EM TIME EXISTENTE
+
+# LOGIN DO TIME
+@participantes_bp.route("/login-time")
+def login_time():
+    return render_template("login_time.html")
+
 
 @participantes_bp.route("/entrar-dupla",methods=["POST"])
 def entrar_dupla():
 
     dupla_id = request.form.get("dupla_id")
-    if not dupla_id:
-        return ("Informe o número do time.",400)
+    senha = request.form.get("senha") or ""
+
+    if not dupla_id or not senha:
+        return ("Informe o número do time e a senha.",400)
 
     try:
         dupla_id = int(dupla_id)
@@ -87,33 +119,51 @@ def entrar_dupla():
 
     conexao = conectar()
     cursor = conexao.cursor()
-    cursor.execute(
-        """
+
+    cursor.execute("""
         SELECT
             id,
-            participante_1,
-            participante_2
+            senha_hash
         FROM duplas
         WHERE id = ?
         """,
         (dupla_id,))
 
     dupla = cursor.fetchone()
+
     conexao.close()
 
     if dupla is None:
-        return ("Time não encontrado.",404)
+        return ("Time ou senha inválidos.",401)
 
-    return redirect(
-        url_for("participantes.quiz",dupla_id=dupla["id"]))
+    senha_correta = password_hash.verify(senha, dupla["senha_hash"])
 
-# QUIZ
+    if not senha_correta:
+        return ("Time ou senha inválidos.",401)
+
+    session["dupla_id"] = dupla["id"]
+
+    return redirect(url_for("participantes.quiz",dupla_id=dupla["id"]))
+
+
+# SAIR DO TIME
+
+@participantes_bp.route("/sair-time")
+def sair_time():
+
+    session.pop("dupla_id",None)
+    return redirect(url_for("participantes.index"))
+
 
 @participantes_bp.route("/quiz/<int:dupla_id>")
 def quiz(dupla_id):
 
+    if session.get("dupla_id") != dupla_id:
+        return ("Acesso não autorizado.",403)
+
     conexao = conectar()
     cursor = conexao.cursor()
+
     cursor.execute(
         """
         SELECT
@@ -162,9 +212,8 @@ def quiz(dupla_id):
                 "participantes.aguardando",
                 dupla_id=dupla_id))
 
-    return render_template("quiz.html",dupla=dupla,dupla_id=dupla_id,pergunta=pergunta)
+    return render_template("quiz.html", dupla=dupla, dupla_id=dupla_id, pergunta=pergunta)
 
-# RESPOSTA
 
 @participantes_bp.route("/responder",methods=["POST"])
 def responder():
@@ -173,7 +222,7 @@ def responder():
     pergunta_id = request.form.get("pergunta_id")
     alternativa = (request.form.get("alternativa") or "").strip().upper()
 
-    if (not dupla_id or not pergunta_id or not alternativa ):
+    if not dupla_id or not pergunta_id or not alternativa:
         return ("Dados da resposta incompletos.",400)
 
     try:
@@ -182,6 +231,9 @@ def responder():
 
     except ValueError:
         return ("Dados da resposta inválidos.",400)
+
+    if session.get("dupla_id") != dupla_id:
+        return ("Acesso não autorizado.",403)
 
     if alternativa not in [
         "A",
@@ -205,14 +257,13 @@ def responder():
         (dupla_id,))
 
     dupla = cursor.fetchone()
+
     if dupla is None:
         conexao.close()
-
         return ("Time não encontrado.",404)
 
-    # Busca a próxima pergunta não respondida
-    cursor.execute(
-        """
+
+    cursor.execute("""
         SELECT
             id,
             alternativa_correta
@@ -233,9 +284,7 @@ def responder():
         conexao.close()
 
         return redirect(
-            url_for(
-                "participantes.aguardando",
-                dupla_id=dupla_id))
+            url_for("participantes.aguardando", dupla_id=dupla_id))
 
     # Impede responder uma pergunta diferente da atual
     if pergunta_id != pergunta_atual["id"]:
@@ -243,13 +292,10 @@ def responder():
 
         return ("Esta não é a pergunta atual do time.",400)
 
-    alternativa_correta = (pergunta_atual["alternativa_correta"])
+    alternativa_correta = pergunta_atual["alternativa_correta"]
     correta = int(alternativa == alternativa_correta)
 
-    pontos = (
-        100
-        if correta
-        else 0)
+    pontos = (100 if correta else 0)
 
     cursor.execute(
         """
@@ -273,15 +319,19 @@ def responder():
     conexao.commit()
     conexao.close()
 
-    return redirect(url_for("participantes.quiz",dupla_id=dupla_id))
+    return redirect(
+        url_for("participantes.quiz",dupla_id=dupla_id))
 
 # AGUARDANDO RESULTADO
-
 @participantes_bp.route("/aguardando/<int:dupla_id>")
 def aguardando(dupla_id):
 
+    if session.get("dupla_id") != dupla_id:
+        return ("Acesso não autorizado.",403)
+
     conexao = conectar()
     cursor = conexao.cursor()
+
     cursor.execute(
         """
         SELECT
@@ -311,17 +361,17 @@ def aguardando(dupla_id):
     conexao.close()
 
     if (configuracao is not None and configuracao["ranking_liberado"] == 1):
-        return redirect( url_for("participantes.ranking"))
+        return redirect(url_for("participantes.ranking"))
 
     return render_template("aguardando.html",dupla=dupla)
 
 # RANKING
-
 @participantes_bp.route("/ranking")
 def ranking():
 
     conexao = conectar()
     cursor = conexao.cursor()
+
     cursor.execute(
         """
         SELECT ranking_liberado
@@ -330,7 +380,6 @@ def ranking():
         """)
 
     configuracao = cursor.fetchone()
-
     conexao.close()
 
     if configuracao is None:
@@ -340,5 +389,4 @@ def ranking():
         return ("O ranking ainda não foi liberado.",403)
 
     classificacao = buscar_ranking()
-
     return render_template("ranking.html",ranking=classificacao)

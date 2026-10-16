@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Entrar no Time</title>
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
+</head>
+
+<body class="entrada-page">
+
+    <header class="topo">
+        <img src="{{ url_for('static',filename='img/estudo-play.png') }}"
+            alt="Estudo Play" class="logo">
+    </header>
+
+    <main class="entrada">
+        <section class="entrada-texto">
+
+            <div class="entrada-apresentacao">
+                <div class="entrada-conteudo">
+                    <span class="ao-vivo">Quiz em Duplas</span>
+                    <h1>
+                        <span class="lar">Entre no seu</span>
+                        <span class="rox">time!</span>
+                    </h1>
+
+                    <p class="sub">Informe o número do time e a senha escolhida no cadastro.</p>
+                </div>
+
+                <div class="entrada-personagem">
+                    <div class="entrada-forma"></div>
+                    <img src="{{ url_for('static',filename='img/aluno.png') }}" alt="" class="entrada-aluno">
+                </div>
+            </div>
+        </section>
+
+        <section class="painel entrada-card">
+
+            <h2>Entrar no time</h2>
+
+            <form
+                class="form-entrada"
+                action="{{ url_for('participantes.entrar_dupla') }}"
+                method="POST">
+
+                <div class="campo">
+                    <label for="dupla_id">Número do time</label>
+                    <input
+                        type="number"
+                        id="dupla_id"
+                        name="dupla_id"
+                        placeholder="Ex: 1"
+                        min="1"
+                        required>
+                </div>
+
+                <div class="campo">
+                    <label for="senha">Senha</label>
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Digite sua senha"
+                        autocomplete="current-password"
+                        required>
+                </div>
+
+                <button class="btn entrada-btn" type="submit"> Entrar no time </button>
+            </form>
+
+            <div class="entrada-existente">
+                <p class="sub">Ainda não possui um time?</p>
+                <a class="btn entrada-btn" href="{{ url_for('participantes.index') }}"> Criar nova dupla</a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -16,9 +16,7 @@
     --f-texto: "Figtree", "Segoe UI", system-ui, sans-serif;
 }
 
-/* =========================================================
-   1. BASE
-   ========================================================= */
+/* 1. BASE */
 
 * {
     box-sizing: border-box;
@@ -66,23 +64,37 @@ a {
     outline-offset: 3px;
 }
 
-.wrap { width: min(100%, 1320px); margin: 0 auto; padding-inline: clamp(16px, 3vw, 32px); }
+.wrap {
+    width: min(100%, 1320px);
+    margin: 0 auto;
+    padding-inline: clamp(16px, 3vw, 32px);
+}
 
 .sprite,
-.sr { position: absolute; }
+.sr {
+    position: absolute;
+}
 
-.sr { left: -9999px; }
+.sr {
+    left: -9999px;
+}
 
-/* =========================================================
-   2. COMPONENTES COMPARTILHADOS
-   ========================================================= */
+/* 2. COMPONENTES COMPARTILHADOS */
 
 .topo {
+    width: min(100%, 1320px);
+    margin: 0 auto;
     display: flex;
+    justify-content: flex-end;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding-block: 18px;
+    gap: 50px;
+    padding: 18px 32px;
+}
+
+.logo {
+    display: block;
+    width: 150px;
+    height: auto;
 }
 
 .lockup {
@@ -94,9 +106,16 @@ a {
     text-decoration: none;
 }
 
-.lockup .l1 { grid-column: 1 / 3; font: 900 22px var(--f-display); color: var(--laranja); }
+.lockup .l1 {
+    grid-column: 1 / 3;
+    font: 700 20px var(--f-display);
+    color: var(--laranja);
+}
 
-.lockup .l2 { font: 900 22px var(--f-display); color: var(--roxo); }
+.lockup .l2 {
+    font: 900 22px var(--f-display);
+    color: var(--roxo);
+}
 
 .turbo {
     display: inline-flex;
@@ -107,9 +126,16 @@ a {
     padding: 2px 3px 2px 10px;
 }
 
-.turbo b { font: italic 800 13px var(--f-texto); color: var(--roxo); }
+.turbo b {
+    font: italic 800 13px var(--f-texto);
+    color: var(--roxo);
+}
 
-.turbo small { display: block; font-size: 8px; color: var(--laranja); }
+.turbo small {
+    display: block;
+    font-size: 8px;
+    color: var(--laranja);
+}
 
 .bolt {
     display: inline-grid;
@@ -121,9 +147,15 @@ a {
     background: var(--roxo);
 }
 
-.bolt svg { width: 58%; height: 58%; }
+.bolt svg {
+    width: 58%;
+    height: 58%;
+}
 
-.ep { width: auto; height: 26px; }
+.ep {
+    width: auto;
+    height: 26px;
+}
 
 h1 {
     margin: 18px 0 0;
@@ -139,7 +171,10 @@ h1 .rox {
     color: var(--roxo);
 }
 
-.sub { max-width: 52ch; color: var(--ink-2); }
+.sub {
+    max-width: 52ch;
+    color: var(--ink-2);
+}
 
 .painel {
     background: var(--painel);
@@ -148,7 +183,9 @@ h1 .rox {
     padding: 20px;
 }
 
-.painel > h1 { font-size: clamp(28px, 4vw, 44px); }
+.painel > h1 {
+    font-size: clamp(28px, 4vw, 44px);
+}
 
 .painel-topo {
     display: flex;
@@ -172,7 +209,10 @@ h1 .rox {
 }
 
 .rotulo .bolt,
-.selo .bolt { width: 28px; height: 28px; }
+.selo .bolt {
+    width: 28px;
+    height: 28px;
+}
 
 .btn {
     display: inline-flex;
@@ -190,9 +230,15 @@ h1 .rox {
     transition: transform .15s, filter .15s;
 }
 
-.btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.btn:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
 
-.btn svg { width: 16px; height: 16px; }
+.btn svg {
+    width: 16px;
+    height: 16px;
+}
 
 .rodape {
     padding-block: 20px 32px;
@@ -201,11 +247,13 @@ h1 .rox {
     font-size: 13px;
 }
 
-/* =========================================================
-   3. TELA DE ENTRADA
-   ========================================================= */
+/* 3. TELA DE ENTRADA */
 
-.entrada-page { min-height: 100vh; display: flex; flex-direction: column; }
+.entrada-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 
 .entrada {
     flex: 1;
@@ -213,10 +261,50 @@ h1 .rox {
     grid-template-columns: minmax(0, 1fr) 420px;
     align-items: center;
     gap: 60px;
-    padding-block: 60px;
+    width: min(100%, 1320px);
+    margin: 0 auto;
+    padding: 60px 32px;
 }
 
-.entrada-texto { max-width: 650px; }
+.entrada-texto {
+    max-width: 650px;
+}
+
+.entrada-apresentacao {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    align-items: center;
+    gap: 30px;
+}
+
+.entrada-conteudo {
+    min-width: 0;
+}
+
+.entrada-personagem {
+    position: relative;
+    min-height: 340px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.entrada-forma {
+    position: absolute;
+    width: 210px;
+    height: 270px;
+    bottom: 10px;
+    border-radius: 70px 70px 45px 45px;
+    background: var(--roxo);
+    transform: rotate(-5deg);
+}
+
+.entrada-aluno {
+    position: relative;
+    z-index: 1;
+    width: 250px;
+    height: auto;
+}
 
 .ao-vivo {
     display: inline-flex;
@@ -238,15 +326,31 @@ h1 .rox {
     background: #e2483d;
 }
 
-.entrada-card { padding: 32px; }
+.entrada-card {
+    padding: 40px;
+}
 
-.entrada-card h2 { margin: 0 0 28px; color: var(--roxo); font: 800 20px var(--f-display); }
+.entrada-card h2 {
+    margin: 0 0 28px;
+    color: var(--roxo);
+    font: 800 20px var(--f-display);
+}
 
-.form-entrada { display: grid; gap: 22px; }
+.form-entrada {
+    display: grid;
+    gap: 22px;
+    padding-inline: 8px;
+}
 
-.campo { display: grid; gap: 8px; }
+.campo {
+    display: grid;
+    gap: 8px;
+}
 
-.campo label { color: var(--ink); font-weight: 700; }
+.campo label {
+    color: var(--ink);
+    font-weight: 700;
+}
 
 .campo input {
     width: 100%;
@@ -260,15 +364,45 @@ h1 .rox {
     transition: border-color .15s;
 }
 
-.campo input:focus { border-color: var(--roxo); }
+.campo input:focus {
+    border-color: var(--roxo);
+}
 
-.campo input::placeholder { color: var(--ink-3); }
+.campo input::placeholder {
+    color: var(--ink-3);
+}
 
-.entrada-btn { margin-top: 6px; }
+.entrada-btn {
+    width: 100%;
+    margin-top: 6px;
+}
 
-/* =========================================================
-   4. QUIZ
-   ========================================================= */
+.entrada-existente {
+    display: grid;
+    gap: 14px;
+    margin-top: 26px;
+    padding-top: 24px;
+    border-top: 1.5px solid var(--linha);
+}
+
+.entrada-existente .sub {
+    max-width: none;
+    margin: 0;
+    text-align: center;
+}
+
+.entrada-existente .entrada-btn {
+    margin-top: 0;
+    border: 1.5px solid var(--roxo);
+    background: #fff;
+    color: var(--roxo);
+}
+
+.entrada-existente .entrada-btn:hover {
+    background: rgba(81, 64, 118, .06);
+}
+
+/* 4. QUIZ */
 
 .heroi {
     display: grid;
@@ -277,7 +411,9 @@ h1 .rox {
     gap: 24px;
 }
 
-.heroi-txt { padding-block: 28px 40px; }
+.heroi-txt {
+    padding-block: 28px 40px;
+}
 
 .metas {
     display: flex;
@@ -293,13 +429,28 @@ h1 .rox {
     padding: 10px 16px;
 }
 
-.meta b { display: block; color: var(--roxo); font: 800 22px var(--f-display); }
+.meta b {
+    display: block;
+    color: var(--roxo);
+    font: 800 22px var(--f-display);
+}
 
-.meta span { color: var(--ink-2); font-size: 12px; text-transform: uppercase; }
+.meta span {
+    color: var(--ink-2);
+    font-size: 12px;
+    text-transform: uppercase;
+}
 
-.setas { display: flex; gap: 6px; margin-top: 26px; }
+.setas {
+    display: flex;
+    gap: 6px;
+    margin-top: 26px;
+}
 
-.setas svg { width: 30px; height: 30px; }
+.setas svg {
+    width: 30px;
+    height: 30px;
+}
 
 .heroi-foto {
     position: relative;
@@ -309,11 +460,20 @@ h1 .rox {
     justify-content: center;
 }
 
-.tri { position: absolute; inset: 6% 2% 0 6%; }
+.tri {
+    position: absolute;
+    inset: 6% 2% 0 6%;
+}
 
-.tri svg { width: 100%; height: 100%; }
+.tri svg {
+    width: 100%;
+    height: 100%;
+}
 
-.aluno { position: relative; width: min(100%, 360px); }
+.aluno {
+    position: relative;
+    width: min(100%, 360px);
+}
 
 .sala {
     display: grid;
@@ -323,7 +483,11 @@ h1 .rox {
     padding-block: 8px 48px;
 }
 
-.pessoas { list-style: none; margin: 0; padding: 0; }
+.pessoas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
 
 .pessoa {
     display: grid;
@@ -334,7 +498,9 @@ h1 .rox {
     padding: 8px 6px;
 }
 
-.pessoa.eu { background: rgba(114, 86, 163, .1); }
+.pessoa.eu {
+    background: rgba(114, 86, 163, .1);
+}
 
 .av {
     width: 38px;
@@ -346,15 +512,30 @@ h1 .rox {
     font: 800 13px var(--f-display);
 }
 
-.nome { font-weight: 700; }
+.nome {
+    font-weight: 700;
+}
 
-.local { color: var(--ink-2); font-size: 12px; }
+.local {
+    color: var(--ink-2);
+    font-size: 12px;
+}
 
-.q { position: relative; overflow: hidden; }
+.q {
+    position: relative;
+    overflow: hidden;
+}
 
-.enunciado { margin: 22px 0 6px; font: 600 clamp(19px, 2vw, 24px)/1.4 var(--f-texto); }
+.enunciado {
+    margin: 22px 0 6px;
+    font: 600 clamp(19px, 2vw, 24px)/1.4 var(--f-texto);
+}
 
-.comando { margin-bottom: 18px; color: var(--ink-2); font-size: 14px; }
+.comando {
+    margin-bottom: 18px;
+    color: var(--ink-2);
+    font-size: 14px;
+}
 
 .opcoes {
     list-style: none;
@@ -378,9 +559,14 @@ h1 .rox {
     transition: border-color .15s, transform .15s, background .15s;
 }
 
-.op:hover { border-color: var(--roxo); transform: translateX(3px); }
+.op:hover {
+    border-color: var(--roxo);
+    transform: translateX(3px);
+}
 
-.op input[type="radio"] { accent-color: var(--roxo); }
+.op input[type="radio"] {
+    accent-color: var(--roxo);
+}
 
 .letra {
     width: 44px;
@@ -393,15 +579,21 @@ h1 .rox {
     font: 800 17px var(--f-display);
 }
 
-.op.sel { border-color: var(--roxo); background: rgba(114, 86, 163, .08); }
+.op.sel {
+    border-color: var(--roxo);
+    background: rgba(114, 86, 163, .08);
+}
 
-.op.sel .letra { background: var(--roxo); color: #fff; }
+.op.sel .letra {
+    background: var(--roxo);
+    color: #fff;
+}
 
-.q-pe { margin-top: 20px; }
+.q-pe {
+    margin-top: 20px;
+}
 
-/* =========================================================
-   5. TELA DE AGUARDO
-   ========================================================= */
+/* 5. TELA DE AGUARDO */
 
 main > .painel {
     margin-block: 50px;
@@ -412,11 +604,11 @@ main > .painel p {
     color: var(--ink-2);
 }
 
-/* =========================================================
-   6. RANKING
-   ========================================================= */
+/* 6. RANKING */
 
-.ranking-page { min-height: 100vh; }
+.ranking-page {
+    min-height: 100vh;
+}
 
 .ranking-heroi {
     display: grid;
@@ -425,7 +617,9 @@ main > .painel p {
     gap: 24px;
 }
 
-.ranking-heroi-texto { padding-block: 28px 40px; }
+.ranking-heroi-texto {
+    padding-block: 28px 40px;
+}
 
 .ranking-acoes {
     display: flex;
@@ -434,7 +628,11 @@ main > .painel p {
     margin-top: 26px;
 }
 
-.ranking-btn-secundario { border: 1.5px solid var(--roxo); background: #fff; color: var(--roxo); }
+.ranking-btn-secundario {
+    border: 1.5px solid var(--roxo);
+    background: #fff;
+    color: var(--roxo);
+}
 
 .ranking-interrogacao {
     position: absolute;
@@ -445,7 +643,9 @@ main > .painel p {
     transform: rotate(10deg);
 }
 
-.ranking-secao { padding-block: 18px 46px; }
+.ranking-secao {
+    padding-block: 18px 46px;
+}
 
 .ranking-secao-cabecalho {
     display: flex;
@@ -456,9 +656,15 @@ main > .painel p {
     margin-bottom: 22px;
 }
 
-.ranking-secao-cabecalho h2 { margin: 12px 0 0; font: 900 clamp(22px, 2.6vw, 30px)/1.1 var(--f-display); }
+.ranking-secao-cabecalho h2 {
+    margin: 12px 0 0;
+    font: 900 clamp(22px, 2.6vw, 30px)/1.1 var(--f-display);
+}
 
-.ranking-secao-cabecalho p { margin: 8px 0 0; color: var(--ink-2); }
+.ranking-secao-cabecalho p {
+    margin: 8px 0 0;
+    color: var(--ink-2);
+}
 
 .ranking-contador {
     border: 1.5px dashed var(--linha);
@@ -470,7 +676,7 @@ main > .painel p {
     font-weight: 700;
 }
 
-/* Pódio */
+/* PÓDIO */
 
 .podio {
     display: grid;
@@ -509,7 +715,11 @@ main > .painel p {
     font: 900 20px var(--f-display);
 }
 
-.vaga .nm { min-height: 20px; font-weight: 800; overflow-wrap: anywhere; }
+.vaga .nm {
+    min-height: 20px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
 
 .degrau {
     position: relative;
@@ -522,15 +732,30 @@ main > .painel p {
     padding-top: 14px;
 }
 
-.degrau b { font: 900 clamp(28px, 4vw, 44px)/1 var(--f-display); }
+.degrau b {
+    font: 900 clamp(28px, 4vw, 44px)/1 var(--f-display);
+}
 
-.degrau span { margin-top: 6px; font-weight: 700; }
+.degrau span {
+    margin-top: 6px;
+    font-weight: 700;
+}
 
-.v1 .degrau { height: clamp(150px, 20vw, 200px); background: linear-gradient(180deg, var(--laranja), var(--amarelo)); }
+.v1 .degrau {
+    height: clamp(150px, 20vw, 200px);
+    background: linear-gradient(180deg, var(--laranja), var(--amarelo));
+}
 
-.v2 .degrau { height: clamp(115px, 15vw, 150px); background: linear-gradient(180deg, #8f7bbd, var(--roxo-2)); color: #fff; }
+.v2 .degrau {
+    height: clamp(115px, 15vw, 150px);
+    background: linear-gradient(180deg, #8f7bbd, var(--roxo-2));
+    color: #fff;
+}
 
-.v3 .degrau { height: clamp(90px, 12vw, 115px); background: linear-gradient(180deg, #67b1d7, var(--azul)); }
+.v3 .degrau {
+    height: clamp(90px, 12vw, 115px);
+    background: linear-gradient(180deg, #67b1d7, var(--azul));
+}
 
 .vaga.revelada .av {
     border-style: solid;
@@ -547,11 +772,16 @@ main > .painel p {
     font: 800 18px var(--f-display);
 }
 
-/* Busca */
+/* BUSCA */
 
-.ranking-busca { margin-top: 18px; }
+.ranking-busca {
+    margin-top: 18px;
+}
 
-.ranking-campo { display: block; max-width: 520px; }
+.ranking-campo {
+    display: block;
+    max-width: 520px;
+}
 
 .ranking-campo input {
     width: 100%;
@@ -564,7 +794,9 @@ main > .painel p {
     outline: none;
 }
 
-.ranking-campo input:focus { border-color: var(--roxo); }
+.ranking-campo input:focus {
+    border-color: var(--roxo);
+}
 
 .ranking-dica {
     min-height: 22px;
@@ -573,7 +805,7 @@ main > .painel p {
     font-size: 13px;
 }
 
-/* Cartas */
+/* CARTAS */
 
 .mural {
     display: grid;
@@ -601,7 +833,9 @@ main > .painel p {
     transition: transform .7s;
 }
 
-.carta.virada .carta-interna { transform: rotateY(180deg); }
+.carta.virada .carta-interna {
+    transform: rotateY(180deg);
+}
 
 .carta-face {
     position: absolute;
@@ -615,11 +849,19 @@ main > .painel p {
     -webkit-backface-visibility: hidden;
 }
 
-.carta-frente { border: 1.5px solid var(--linha); background: #fff; }
+.carta-frente {
+    border: 1.5px solid var(--linha);
+    background: #fff;
+}
 
-.carta:hover .carta-frente { border-color: var(--roxo); }
+.carta:hover .carta-frente {
+    border-color: var(--roxo);
+}
 
-.carta-interrogacao { color: var(--roxo); font: 900 34px/1 var(--f-display); }
+.carta-interrogacao {
+    color: var(--roxo);
+    font: 900 34px/1 var(--f-display);
+}
 
 .carta-nome {
     margin-top: auto;
@@ -636,21 +878,40 @@ main > .painel p {
     text-transform: uppercase;
 }
 
-.carta-verso { background: linear-gradient(160deg, var(--roxo), var(--roxo-2)); color: #fff; transform: rotateY(180deg); }
+.carta-verso {
+    background: linear-gradient(160deg, var(--roxo), var(--roxo-2));
+    color: #fff;
+    transform: rotateY(180deg);
+}
 
-.carta-verso.top3 { background: linear-gradient(160deg, var(--laranja), var(--amarelo)); color: var(--ink); }
+.carta-verso.top3 {
+    background: linear-gradient(160deg, var(--laranja), var(--amarelo));
+    color: var(--ink);
+}
 
-.carta-verso.top10 { background: linear-gradient(160deg, var(--roxo-2), #8f7bbd); }
+.carta-verso.top10 {
+    background: linear-gradient(160deg, var(--roxo-2), #8f7bbd);
+}
 
-.carta-posicao { font: 900 36px/1 var(--f-display); }
+.carta-posicao {
+    font: 900 36px/1 var(--f-display);
+}
 
-.carta-pontos { margin-top: 6px; font-size: 13px; font-weight: 700; }
+.carta-pontos {
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 700;
+}
 
-.carta.escondida { display: none; }
+.carta.escondida {
+    display: none;
+}
 
-.carta.encontrada .carta-face { box-shadow: 0 0 0 4px var(--laranja); }
+.carta.encontrada .carta-face {
+    box-shadow: 0 0 0 4px var(--laranja);
+}
 
-/* Confete */
+/* CONFETE */
 
 #confete {
     position: fixed;
@@ -661,11 +922,10 @@ main > .painel p {
     pointer-events: none;
 }
 
-/* =========================================================
-   7. RESPONSIVIDADE
-   ========================================================= */
+/* 7. RESPONSIVIDADE */
 
 @media (max-width: 900px) {
+
     .entrada {
         grid-template-columns: 1fr;
         gap: 30px;
@@ -675,6 +935,24 @@ main > .painel p {
     .entrada-texto {
         margin: 0 auto;
         text-align: center;
+    }
+
+    .entrada-apresentacao {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .entrada-personagem {
+        min-height: 280px;
+    }
+
+    .entrada-aluno {
+        width: 210px;
+    }
+
+    .entrada-forma {
+        width: 180px;
+        height: 220px;
     }
 
     .entrada-card {
@@ -689,12 +967,15 @@ main > .painel p {
 }
 
 @media (max-width: 760px) {
+
     .heroi,
+
     .ranking-heroi {
         grid-template-columns: 1fr;
     }
 
     .heroi-foto,
+
     .ranking-heroi .heroi-foto {
         display: none;
     }
@@ -732,11 +1013,13 @@ main > .painel p {
 }
 
 @media (max-width: 480px) {
+
     .topo {
         align-items: flex-start;
     }
 
     .lockup .l1,
+
     .lockup .l2 {
         font-size: 18px;
     }
@@ -755,6 +1038,7 @@ main > .painel p {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     html {
         scroll-behavior: auto;
     }
