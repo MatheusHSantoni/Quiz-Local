@@ -1,41 +1,51 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="3">
-    
-    <title>Aguardando resultado</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> 
+    <title>Aguardando · Maratona Enem</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
-
     <div class="wrap">
         <header class="topo">
             <div class="lockup">
                 <span class="l1">MARATONA</span>
                 <span class="l2">ENEM</span>
             </div>
-
-            <img
-                class="ep"
-                src="{{ url_for('static', filename='img/estudo-play.png') }}"
-                alt="Estudo Play">
+            <img class="ep" src="{{ url_for('static', filename='img/estudo-play.png') }}" alt="Estudo Play">
         </header>
         <main>
             <section class="painel">
-
-                <h1>Quiz finalizado!</h1>
-                <p>
-                    {{ dupla["participante_1"] }} e
-                    {{ dupla["participante_2"] }},
-                    suas respostas foram registradas.
-                </p>
-
-                <p>Aguarde a liberação do ranking pela organização.</p>
+                {% if estado == 'desempate_aguardando' %}
+                    <h1>Aguardando desempate</h1>
+                    <p>{{ dupla["participante_1"] }} e {{ dupla["participante_2"] }}, sua dupla está classificada para a morte súbita.</p>
+                    <p><strong>Aguarde o sorteio da próxima área.</strong></p>
+                {% elif estado == 'desempate_respondido' %}
+                    <h1>Resposta registrada!</h1>
+                    <p>Sua resposta da morte súbita foi registrada.</p>
+                    <p><strong>Aguarde as demais duplas e a próxima rodada.</strong></p>
+                {% elif estado == 'desempate_eliminada' %}
+                    <h1>Desempate concluído para sua dupla</h1>
+                    <p>Esta rodada definiu a posição da sua dupla.</p>
+                    <p><strong>Aguarde a liberação do ranking final.</strong></p>
+                {% elif estado == 'etapa1_concluida' %}
+                    <h1>Etapa 1 concluída!</h1>
+                    <p>{{ dupla["participante_1"] }} e {{ dupla["participante_2"] }}, suas respostas foram registradas.</p>
+                    <p><strong>Até semana que vem!</strong></p>
+                {% elif estado == 'etapa2_concluida' %}
+                    <h1>Quiz finalizado!</h1>
+                    <p>{{ dupla["participante_1"] }} e {{ dupla["participante_2"] }}, suas respostas foram registradas.</p>
+                    <p><strong>Daqui a pouco saberemos o resultado.</strong></p>
+                {% elif estado == 'pausada' %}
+                    <h1>Aplicação pausada</h1>
+                    <p>{{ dupla["participante_1"] }} e {{ dupla["participante_2"] }}, não há questões liberadas neste momento.</p>
+                    <p>Aguarde a liberação da organização.</p>
+                {% else %}
+                    <h1>Aguarde um instante</h1>
+                    <p>Não há novas questões disponíveis para a dupla neste momento.</p>
+                {% endif %}
             </section>
         </main>
     </div>

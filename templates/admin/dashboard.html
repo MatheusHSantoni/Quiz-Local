@@ -1,100 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Admin - Maratona Enem</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-
-<body>
-
-    <div class="wrap">
-        <header class="topo">
-
-            <div class="lockup">
-                <span class="l1">MARATONA</span>
-                <span class="l2">ENEM</span>
-            </div>
-
-            <img
-                class="ep" src="{{ url_for('static', filename='img/estudo-play.png') }}" alt="Estudo Play">
-
-        </header>
-        <main>
-
-           {% with mensagens = get_flashed_messages() %}
-                {% if mensagens %}
-                    {% for mensagem in mensagens %}
-                        <p class="admin-mensagem">{{ mensagem }}</p>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            <section class="painel">
-
-                <h1>Painel administrativo</h1>
-                <p> Gerencie as perguntas do quiz e controle a liberação do ranking.</p>
-
-            </section>
-
-            <section class="admin-resumo">
-
-                <!-- PERGUNTAS -->
-                <div class="painel">
-                    <h2>Perguntas</h2>
-                    <strong>{{ total_perguntas }}</strong>
-                    <p>perguntas cadastradas</p>
-                    <a class="btn" href="{{ url_for('admin.perguntas') }}">Gerenciar perguntas</a>
-                </div>
-
-                <div class="painel">
-                    <h2>Duplas</h2>
-                    <strong>{{ total_duplas }}</strong>
-                    <p>duplas participantes</p>
-                </div>
-
-
-                <!-- RANKING -->
-                <div class="painel">
-                    <h2>Ranking</h2>
-                    {% if ranking_liberado %}
-
-                        <strong>Liberado</strong>
-                        <p>Os participantes já podem visualizar o ranking.</p>
-                        <form
-                            action="{{ url_for('admin.bloquear_ranking') }}" method="post">
-                            <button class="btn ranking-btn-secundario" type="submit">Bloquear ranking </button>
-                        </form>
-                    {% else %}
-
-                        <strong> Bloqueado </strong>
-                        <p> Os participantes ainda não podem visualizar o resultado.</p>
-                        <form action="{{ url_for('admin.liberar_ranking') }}" method="post">
-                            <button class="btn" type="submit">Liberar ranking</button>
-                        </form>
-
-                    {% endif %}
-
-                </div>
-            </section>
-
-            <section class="admin-acoes">
-
-                <a class="btn" href="{{ url_for('admin.nova_pergunta') }}">Nova pergunta</a>
-                <a class="btn ranking-btn-secundario" href="{{ url_for('admin.logout') }}">Sair </a>
-
-            </section>
-        </main>
-
-        <footer class="rodape">Painel administrativo · Maratona Enem</footer>
-
-    </div>
-</body>
-</html>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin - Maratona ENEM</title><link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}"></head><body><div class="wrap"><main>
+{% with ms=get_flashed_messages() %}{% for m in ms %}<p class="admin-mensagem">{{m}}</p>{% endfor %}{% endwith %}
+<section class="painel"><h1>Painel administrativo</h1><p>Controle as questões, duplas, etapas e o ranking.</p></section>
+<section class="admin-resumo">
+<div class="painel"><h2>Questões</h2><strong>{{total_perguntas}}</strong><p>LC {{prontidao.LC}} · CH {{prontidao.CH}} · CN {{prontidao.CN}} · MT {{prontidao.MT}} principais ativas</p><a class="btn" href="{{url_for('admin.perguntas')}}">Gerenciar questões</a></div>
+<div class="painel"><h2>Duplas</h2><strong>{{total_duplas}}</strong><p>duplas cadastradas</p><a class="btn" href="{{url_for('admin.duplas')}}">Gerenciar duplas</a></div>
+<div class="painel"><h2>Aplicação</h2><strong>{% if etapa_ativa==1 %}Etapa 1{% elif etapa_ativa==2 %}Etapa 2{% else %}Pausada{% endif %}</strong><p>Etapa 1: LC + CH · Etapa 2: CN + MT</p>
+<form action="{{url_for('admin.definir_etapa',etapa=1)}}" method="post" style="display:inline"><button class="btn">Abrir etapa 1</button></form>
+<form action="{{url_for('admin.definir_etapa',etapa=2)}}" method="post" style="display:inline"><button class="btn">Abrir etapa 2</button></form>
+<form action="{{url_for('admin.definir_etapa',etapa=0)}}" method="post" style="display:inline"><button class="btn ranking-btn-secundario">Pausar</button></form></div>
+{% if resumo_ranking.grupos_empate %}<div class="painel desempate-destaque"><h2>Morte súbita</h2><strong>{{resumo_ranking.grupos_empate}} empate(s) pendente(s)</strong><p>{{resumo_ranking.duplas_empatadas}} dupla(s) aguardando desempate</p><a class="btn" href="{{url_for('admin.desempates')}}">Gerenciar desempate</a></div>{% endif %}
+<div class="painel"><h2>Ranking</h2><strong>{{'Liberado' if ranking_liberado else 'Bloqueado'}}</strong><p>{{resumo_ranking.elegiveis}} aptas · {{resumo_ranking.incompletas}} incompletas{% if resumo_ranking.grupos_empate %} · {{resumo_ranking.grupos_empate}} empate(s){% endif %}</p><div class="admin-ranking-acoes"><a class="btn ranking-btn-secundario" href="{{url_for('admin.ranking_preview')}}">Ver prévia</a><form action="{{url_for('admin.ranking_acao',acao='bloquear' if ranking_liberado else 'liberar')}}" method="post"><button class="btn">{{'Bloquear' if ranking_liberado else 'Liberar'}} ranking</button></form></div></div>
+</section><p><a href="{{url_for('admin.logout')}}">Sair</a></p></main></div></body></html>

@@ -1,0 +1,12 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Visualizar questão</title><link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}"></head>
+<body><div class="wrap"><main><section class="painel questao-detalhe">
+  <div class="questao-detalhe-topo"><div><span class="badge-area">{{pergunta.area}}</span> <span class="badge-neutro">Ordem {{pergunta.ordem}}</span> <span class="badge-neutro">{{'Ativa' if pergunta.tipo=='PRINCIPAL' and pergunta.ativa else 'Reserva'}}</span></div><a class="btn ranking-btn-secundario" href="{{url_for('admin.perguntas')}}">Voltar</a></div>
+  <h2>{{pergunta.enunciado}}</h2>
+  {% if pergunta.imagem %}<img class="questao-detalhe-imagem" src="{{url_for('static',filename=pergunta.imagem)}}" alt="Imagem da questão">{% endif %}
+  <div class="questao-alternativas-admin">
+  {% for l in ['A','B','C','D','E'] %}{% set key='alternativa_'+l|lower %}
+    <div class="alternativa-admin {{'alternativa-correta-admin' if pergunta.alternativa_correta==l else ''}}"><strong>{{l}}</strong><span>{{pergunta[key]}}</span>{% if pergunta.alternativa_correta==l %}<b>✓ CORRETA</b>{% endif %}</div>
+  {% endfor %}
+  </div>
+  <p class="admin-meta">{{pergunta.total_respostas}} resposta{{'s' if pergunta.total_respostas != 1 else ''}} registrada{{'s' if pergunta.total_respostas != 1 else ''}}.</p>
+</section></main></div></body></html>

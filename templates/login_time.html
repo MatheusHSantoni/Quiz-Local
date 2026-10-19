@@ -8,6 +8,7 @@
     <title>Entrar no Time</title>
 
     <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
+    <script src="{{ url_for('static',filename='js/senha.js') }}" defer></script>
 </head>
 
 <body class="entrada-page">
@@ -42,6 +43,9 @@
 
             <h2>Entrar no time</h2>
 
+            {% if request.args.get('sessao') == 'substituida' %}
+            <p class="flash-msg">A sessão desta dupla não está mais ativa neste navegador. Faça login novamente.</p>
+            {% endif %}
             <form
                 class="form-entrada"
                 action="{{ url_for('participantes.entrar_dupla') }}"
@@ -60,6 +64,7 @@
 
                 <div class="campo">
                     <label for="senha">Senha</label>
+                    <div class="senha-wrap">
                     <input
                         type="password"
                         id="senha"
@@ -67,6 +72,8 @@
                         placeholder="Digite sua senha"
                         autocomplete="current-password"
                         required>
+                    <button type="button" class="senha-toggle" data-password-toggle="senha">Exibir</button>
+                    </div>
                 </div>
 
                 <button class="btn entrada-btn" type="submit"> Entrar no time </button>

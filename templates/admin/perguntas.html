@@ -1,117 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Perguntas - Admin</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Questões</title>
+  <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}">
 </head>
-
 <body>
+<div class="wrap"><main><section class="painel admin-questoes-painel">
+  <div class="painel-topo">
+    <div><h1>Questões</h1><p>{{perguntas|length}} cadastradas.</p></div>
+    <a class="btn" href="{{url_for('admin.nova_pergunta')}}">Nova questão</a>
+  </div>
+  {% with ms=get_flashed_messages() %}{% for m in ms %}<p class="admin-mensagem">{{m}}</p>{% endfor %}{% endwith %}
 
-    <div class="wrap">
-        <header class="topo">
-
-            <a class="lockup" href="{{ url_for('admin.dashboard') }}">
-                <span class="l1">MARATONA</span>
-                <span class="l2">ENEM</span>
-            </a>
-            <img
-                class="ep" src="{{ url_for('static', filename='img/estudo-play.png') }}" alt="Estudo Play">
-        </header>
-        <main>
-
-            {% with mensagens = get_flashed_messages() %}
-                {% if mensagens %}
-                    {% for mensagem in mensagens %}
-
-                        <p class="admin-mensagem">{{ mensagem }}</p>
-
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-
-            <section class="painel">
-
-                <div class="painel-topo">
-
-                    <div>
-                        <h1>Perguntas</h1>
-                        <p>{{ perguntas|length }} perguntas cadastradas.</p>
-                    </div>
-                    <a class="btn" href="{{ url_for('admin.nova_pergunta') }}">Nova pergunta</a>
-                </div>
-
-
-                {% if perguntas %}
-
-                    <div class="admin-perguntas">
-                        {% for pergunta in perguntas %}
-                            <article class="admin-pergunta">
-
-                                <div class="admin-pergunta-topo">
-                                    <strong>Questão {{ pergunta["id"] }}</strong>
-                                    <span>Correta:{{ pergunta["alternativa_correta"] }}</span>
-                                </div>
-
-
-                                <p class="admin-enunciado">{{ pergunta["enunciado"] }}</p>
-
-
-                                <ol
-                                    class="admin-alternativas"type="A">
-                                    <li>{{ pergunta["alternativa_a"] }}</li>
-                                    <li>{{ pergunta["alternativa_b"] }}</li>
-                                    <li>{{ pergunta["alternativa_c"] }}</li>
-                                    <li>{{ pergunta["alternativa_d"] }}</li>
-                                    <li>{{ pergunta["alternativa_e"] }}</li>
-
-                                </ol>
-
-
-                                <div class="admin-pergunta-acoes">
-
-                                    <a class="btn" href="{{ url_for('admin.editar_pergunta', pergunta_id=pergunta['id']) }}">Editar</a>
-                                    <form
-                                        action="{{ url_for(
-                                            'admin.excluir_pergunta',
-                                            pergunta_id=pergunta['id']
-                                        ) }}"
-                                        method="post"
-                                        onsubmit="return confirm('Tem certeza que deseja excluir esta pergunta?');">
-
-                                        <button class="btn ranking-btn-secundario" type="submit">Excluir</button>
-                                    </form>
-                                </div>
-
-                            </article>
-                        {% endfor %}
-                    </div>
-
-                {% else %}
-
-                    <p>Nenhuma pergunta cadastrada ainda.</p>
-
-                {% endif %}
-
-
-                <div class="admin-voltar">
-
-                    <a class="btn ranking-btn-secundario" href="{{ url_for('admin.dashboard') }}">Voltar ao painel</a>
-
-                </div>
-            </section>
-        </main>
-
-        <footer class="rodape">Painel administrativo · Maratona Enem</footer>
-
-    </div>
-</body>
-</html>
+  <div class="admin-tabela-wrap">
+    <table class="admin-tabela-questoes">
+      <thead><tr>
+        <th>Enunciado</th><th>Alternativa correta</th><th>Área</th><th>Ordem</th><th>Ativa / Reserva</th><th>Ações</th>
+      </tr></thead>
+      <tbody>
+      {% for p in perguntas %}
+        {% set letra=p.alternativa_correta|lower %}
+        <tr>
+          <td class="questao-enunciado"><a href="{{url_for('admin.visualizar_pergunta',pergunta_id=p.id)}}">{{p.enunciado}}</a>{% if p.total_respostas %}<small>{{p.total_respostas}} resposta{{'s' if p.total_respostas != 1 else ''}}</small>{% endif %}</td>
+          <td><span class="resposta-correta-mini">{{p.alternativa_correta}}</span> {{p['alternativa_'+letra]}}</td>
+          <td><span class="badge-area">{{p.area}}</span></td>
+          <td>{{p.ordem}}</td>
+          <td>
+            <form action="{{url_for('admin.alternar_status_pergunta',pergunta_id=p.id)}}" method="post">
+              <button class="status-toggle {{'status-ativa' if p.tipo=='PRINCIPAL' and p.ativa else 'status-reserva'}}" type="submit" aria-label="Alterar status da questão">
+                <span class="status-dot"></span>{{'Ativa' if p.tipo=='PRINCIPAL' and p.ativa else 'Reserva'}}
+              </button>
+            </form>
+          </td>
+          <td><div class="acoes-tabela">
+            <a href="{{url_for('admin.visualizar_pergunta',pergunta_id=p.id)}}">Visualizar</a>
+            {% if not p.total_respostas %}<a href="{{url_for('admin.editar_pergunta',pergunta_id=p.id)}}">Editar</a>{% else %}<span class="acao-bloqueada" title="Questão já respondida">Editar</span>{% endif %}
+            {% if not p.total_respostas %}<form action="{{url_for('admin.excluir_pergunta',pergunta_id=p.id)}}" method="post" onsubmit="return confirm('Excluir esta questão?')"><button type="submit" class="acao-link acao-perigo">Excluir</button></form>{% else %}<span class="acao-bloqueada" title="Questão já respondida">Excluir</span>{% endif %}
+          </div></td>
+        </tr>
+      {% else %}<tr><td colspan="6">Nenhuma questão cadastrada.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p><a href="{{url_for('admin.dashboard')}}">Voltar ao painel</a></p>
+</section></main></div>
+</body></html>

@@ -283,7 +283,7 @@
                     <button
                         class="carta"
                         type="button"
-                        data-posicao="{{ loop.index }}"
+                        data-posicao="{{ dupla['posicao'] }}"
                         data-nome="{{ nome_dupla }}"
                         data-pontos="{{ dupla['total_pontos'] }}"
                         aria-label="{{ nome_dupla }}, posição oculta">
@@ -300,14 +300,14 @@
                                 class="
                                     carta-face
                                     carta-verso
-                                    {% if loop.index <= 3 %}
+                                    {% if dupla['posicao'] <= 3 %}
                                         top3
-                                    {% elif loop.index <= 10 %}
+                                    {% elif dupla['posicao'] <= 10 %}
                                         top10
                                     {% endif %}
                                 ">
 
-                                <span class="carta-posicao"> {{ loop.index }}º </span>
+                                <span class="carta-posicao"> {{ dupla["posicao"] }}º </span>
                                 <span class="carta-nome"> {{ nome_dupla }} </span>
                                 <span class="carta-pontos"> {{ dupla["total_pontos"] }} pontos </span>
 

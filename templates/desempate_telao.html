@@ -1,0 +1,12 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Morte súbita · Maratona ENEM</title><link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}"></head><body><div class="wrap telao-wrap"><header class="topo"><div class="lockup"><span class="l1">MARATONA</span><span class="l2">ENEM</span></div><img class="ep" src="{{url_for('static',filename='img/estudo-play.png')}}"></header><main>
+<section class="painel telao-desempate"><span class="badge-neutro">MORTE SÚBITA</span><h1 id="titulo">{% if estado.sessao.status=='RESOLVIDO' %}Desempate resolvido!{% elif estado.rodada %}Área sorteada{% else %}Preparem-se para o sorteio!{% endif %}</h1>
+<div id="area" class="area-sorteada {% if estado.rodada %}revelada{% endif %}">{% if estado.rodada %}{{estado.rodada.area}}{% else %}?{% endif %}</div>
+<p id="subtitulo">{% if estado.sessao.status=='RESOLVIDO' %}Temos um vencedor nesta disputa.{% elif estado.rodada %}Rodada {{estado.rodada.numero}} · As duplas empatadas já podem responder.{% else %}A organização sorteará a área da próxima questão.{% endif %}</p>
+<div class="telao-duplas" id="duplas">{% for m in estado.membros %}<div class="telao-dupla"><b>#{{m.id}} · {{m.participante_1}} + {{m.participante_2}}</b><span>{{m.status}}</span></div>{% endfor %}</div>
+{% if estado.rodada and estado.sessao.status!='RESOLVIDO' %}<div class="progresso-desempate"><b id="progresso">{{estado.respondidas}}/{{estado.esperadas}}</b><span>duplas responderam</span></div>{% endif %}
+</section></main></div>
+<script>
+let assinatura = {{ (estado.rodada.numero if estado.rodada else 0)|tojson }} + ':' + {{ estado.sessao.status|tojson }};
+async function atualizar(){try{const r=await fetch('{{url_for("participantes.status_desempate",desempate_id=estado.sessao.id)}}',{cache:'no-store'});const d=await r.json();const a=(d.rodada?d.rodada.numero:0)+':'+d.status;if(a!==assinatura){location.reload();return;}const p=document.getElementById('progresso');if(p)p.textContent=d.respondidas+'/'+d.esperadas;}catch(e){}}
+setInterval(atualizar,2000);
+</script></body></html>

@@ -1,0 +1,10 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Morte súbita · Maratona ENEM</title><link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}"></head><body><div class="wrap"><main>
+{% with ms=get_flashed_messages() %}{% for m in ms %}<p class="admin-mensagem">{{m}}</p>{% endfor %}{% endwith %}
+<section class="painel admin-desempate-painel"><span class="badge-neutro">Desempate</span><h1>Morte súbita</h1><p>As questões extras não alteram os 800 pontos do quiz. Elas definem apenas a ordem entre as duplas empatadas.</p><a href="{{url_for('admin.dashboard')}}">Voltar ao painel</a></section>
+{% if sessoes %}<div class="desempates-grid">{% for item in sessoes %}{% set s=item.sessao %}<section class="painel desempate-card">
+<div class="desempate-card-topo"><div><span class="badge-area">{{s.pontos_regulares}} pontos</span><h2>Grupo de desempate #{{s.id}}</h2></div><span class="status-toggle status-{{'ativa' if s.status=='EM_ANDAMENTO' else 'reserva'}}">{{s.status|replace('_',' ')}}</span></div>
+<div class="desempate-membros">{% for m in item.membros %}<div><b>Dupla #{{m.dupla_id}}</b><span>{{m.participante_1}} + {{m.participante_2}}</span><small>{{m.status}}</small></div>{% endfor %}</div>
+{% if item.rodada %}<div class="rodada-atual"><b>Rodada {{item.rodada.numero}} · {{item.rodada.area}}</b><span>{{item.rodada.enunciado}}</span><small>Status: {{item.rodada.status}}</small></div>{% endif %}
+<div class="desempate-acoes"><form action="{{url_for('admin.sortear_desempate',desempate_id=s.id)}}" method="post"><button class="btn" {% if item.rodada and item.rodada.status=='ABERTA' %}disabled{% endif %}>Sortear próxima área</button></form><a class="btn ranking-btn-secundario" target="_blank" href="{{url_for('participantes.telao_desempate',desempate_id=s.id)}}">Abrir telão</a></div>
+</section>{% endfor %}</div>{% else %}<section class="painel"><h2>Nenhum desempate pendente</h2><p>Todos os empates foram resolvidos.</p></section>{% endif %}
+</main></div></body></html>

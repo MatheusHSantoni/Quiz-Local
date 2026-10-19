@@ -112,12 +112,14 @@
                             <svg><use href="#raio"></use></svg>
                         </span>
 
-                        Pergunta
+                        {% if desempate is defined and desempate %}Morte súbita · {{ pergunta["area"] }}{% else %}Pergunta{% endif %}
                     </h2>
                 </div>
 
 
                 <p class="enunciado">{{ pergunta["enunciado"] }}</p>
+
+                {% if pergunta["imagem"] %}<img src="{{ url_for('static', filename=pergunta['imagem']) }}" alt="Imagem da questão" style="max-width:100%;height:auto;margin:1rem 0">{% endif %}
 
                 <p class="comando">Escolha uma alternativa e confirme sua resposta.</p>
 
