@@ -1,4 +1,4 @@
-from conexao import conectar
+from database.conexao import conectar
 
 conexao = conectar()
 cursor = conexao.cursor()
@@ -14,7 +14,7 @@ cursor.execute(
         alternativa_e,
         alternativa_correta
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
     """,
     (
         "Qual é a capital do Brasil?",
@@ -38,7 +38,7 @@ cursor.execute(
         alternativa_e,
         alternativa_correta
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
     """,
     (
         "Quanto é 10 × 5?",
@@ -53,4 +53,4 @@ cursor.execute(
 conexao.commit()
 conexao.close()
 
-print("Pergunta inserida com sucesso.")
+print("Perguntas inseridas com sucesso.")

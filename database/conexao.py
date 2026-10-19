@@ -1,13 +1,10 @@
-import sqlite3
-from pathlib import Path
-
-CAMINHO_BANCO = Path(__file__).parent / "database.db"
-
+import os
+import psycopg
+from psycopg.rows import dict_row
 
 def conectar():
-    conexao = sqlite3.connect(CAMINHO_BANCO, timeout=10)
-    conexao.row_factory = sqlite3.Row
-    conexao.execute("PRAGMA foreign_keys = ON")
-    conexao.execute("PRAGMA busy_timeout = 10000")
-    conexao.execute("PRAGMA journal_mode = WAL")
-    return conexao
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("A variável DATABASE_URL não foi configurada.")
+
+    return psycopg.connect(database_url, row_factory=dict_row)
