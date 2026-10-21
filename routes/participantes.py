@@ -126,7 +126,9 @@ def _etapa_concluida(cursor, dupla_id, etapa):
 def _buscar_configuracao(cursor):
     return cursor.execute("""
         SELECT etapa_ativa,
-               ranking_liberado
+               ranking_liberado,
+               fim_etapa,
+               CURRENT_TIMESTAMP AS agora
         FROM configuracoes
         WHERE id=1
     """).fetchone()
@@ -330,7 +332,8 @@ def quiz(dupla_id):
                     dupla_id=dupla_id,
                     pergunta=rodada,
                     etapa="DESEMPATE",
-                    desempate=True,)
+                    desempate=True,
+                    fim_etapa=None,)
 
     configuracao = _buscar_configuracao(
         cursor)
@@ -352,6 +355,12 @@ def quiz(dupla_id):
 
         return redirect(url_for("participantes.aguardando",dupla_id=dupla_id,))
 
+    if (configuracao["fim_etapa"] is None
+        or configuracao["agora"] >= configuracao["fim_etapa"]):
+        conexao.close()
+
+        return redirect(url_for("participantes.aguardando",dupla_id=dupla_id,))
+
     pergunta = _proxima_pergunta(
         cursor,
         dupla_id,
@@ -362,7 +371,7 @@ def quiz(dupla_id):
     if pergunta is None:
         return redirect(url_for("participantes.aguardando",dupla_id=dupla_id,))
 
-    return render_template("quiz.html", dupla=dupla, dupla_id=dupla_id, pergunta=pergunta,etapa=etapa, desempate=False,)
+    return render_template("quiz.html", dupla=dupla, dupla_id=dupla_id, pergunta=pergunta,etapa=etapa, desempate=False,fim_etapa=configuracao["fim_etapa"],)
 
 
 @participantes_bp.route("/responder", methods=["POST"])
@@ -469,6 +478,13 @@ def responder():
         return redirect(
             url_for("participantes.aguardando",dupla_id=dupla_id,))
 
+    if (configuracao["fim_etapa"] is None
+        or configuracao["agora"] >= configuracao["fim_etapa"]):
+        conexao.close()
+
+        return redirect(
+            url_for("participantes.aguardando",dupla_id=dupla_id,))
+
     pergunta_atual = _proxima_pergunta(
         cursor,
         dupla_id,
@@ -549,9 +565,7 @@ def aguardando(dupla_id):
     if dupla is None:
         conexao.close()
 
-        return (
-            "Time não encontrado.",
-            404,)
+        return ("Time não encontrado.",404,)
 
     configuracao = _buscar_configuracao(
         cursor)
@@ -622,12 +636,14 @@ def aguardando(dupla_id):
     # estava esperando, ela volta automaticamente
     # para o quiz.
     if (etapa_ativa in (1, 2)
+        and configuracao["fim_etapa"] is not None
+        and configuracao["agora"] < configuracao["fim_etapa"]
         and _proxima_pergunta(
             cursor,
             dupla_id,
             etapa_ativa,
-        ) is not None
-    ):
+        ) is not None):
+
         conexao.close()
 
         return redirect(
@@ -708,9 +724,7 @@ def telao_desempate(desempate_id):
 def status_desempate(desempate_id):
     from services.desempate import status_telao
 
-    estado = status_telao(
-        desempate_id
-    )
+    estado = status_telao(desempate_id)
 
     if not estado:
         return jsonify({

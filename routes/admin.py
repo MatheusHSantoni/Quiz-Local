@@ -2,7 +2,6 @@ import os
 from functools import wraps
 from pathlib import Path
 from uuid import uuid4
-
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, current_app
 from pwdlib import PasswordHash
 from werkzeug.utils import secure_filename
@@ -211,9 +210,12 @@ def dashboard():
     ).fetchone()["total"]
 
     config = c.execute("""
-        SELECT ranking_liberado, etapa_ativa
-        FROM configuracoes
-        WHERE id=1
+    SELECT ranking_liberado,
+           etapa_ativa,
+           fim_etapa,
+           CURRENT_TIMESTAMP AS agora
+    FROM configuracoes
+    WHERE id=1
     """).fetchone()
 
     prontidao = {}
@@ -239,6 +241,8 @@ def dashboard():
         total_perguntas=total_perguntas,
         total_duplas=total_duplas,
         ranking_liberado=bool(config["ranking_liberado"]),
+        fim_etapa=config["fim_etapa"],
+        agora=config["agora"],
         etapa_ativa=config["etapa_ativa"],
         prontidao=prontidao,
         resumo_ranking=resumo,
@@ -287,7 +291,8 @@ def definir_etapa(etapa):
         c.execute(
             """
             UPDATE configuracoes
-            SET etapa_ativa=%s
+            SET etapa_ativa=%s,
+                fim_etapa=NULL
             WHERE id=1
             """,
             (etapa,),
@@ -301,7 +306,8 @@ def definir_etapa(etapa):
 
         con.execute("""
             UPDATE configuracoes
-            SET etapa_ativa=0
+            SET etapa_ativa=0,
+                fim_etapa=NULL
             WHERE id=1
         """)
 
@@ -1119,17 +1125,63 @@ def ranking_acao(acao):
     return redirect(url_for("admin.dashboard"))
 
 
-# BLOCO 5 — MORTE SÚBITA
+# BLOCO 5 — CRONÔMETRO
 
-@admin_bp.route("/desempates")
+@admin_bp.route("/timer/iniciar", methods=["POST"])
 @admin_obrigatorio
-def desempates():
-    from services.desempate import sessoes_pendentes
+def iniciar_timer():
+    con = conectar()
 
-    return render_template(
-        "admin/desempates.html",
-        sessoes=sessoes_pendentes(),
-    )
+    configuracao = con.execute("""
+        SELECT etapa_ativa
+        FROM configuracoes
+        WHERE id=1
+    """).fetchone()
+
+    if configuracao is None:
+        con.close()
+
+        flash("Configuração do quiz não encontrada.")
+
+        return redirect(url_for("admin.dashboard"))
+
+    if configuracao["etapa_ativa"] not in (1, 2):
+        con.close()
+
+        flash("Libere uma etapa antes de iniciar o cronômetro.")
+
+        return redirect(url_for("admin.dashboard"))
+
+    con.execute("""
+        UPDATE configuracoes
+        SET fim_etapa = CURRENT_TIMESTAMP + INTERVAL '10 minutes'
+        WHERE id=1
+    """)
+
+    con.commit()
+    con.close()
+
+    flash("Cronômetro de 10 minutos iniciado.")
+
+    return redirect(url_for("admin.dashboard"))
+
+
+@admin_bp.route("/timer/encerrar", methods=["POST"])
+@admin_obrigatorio
+def encerrar_timer():
+    con = conectar()
+
+    con.execute("""
+        UPDATE configuracoes
+        SET fim_etapa = NULL
+        WHERE id=1""")
+
+    con.commit()
+    con.close()
+
+    flash("Cronômetro encerrado.")
+
+    return redirect(url_for("admin.dashboard"))
 
 
 @admin_bp.route("/desempates/<int:desempate_id>/sortear", methods=["POST"])
@@ -1145,16 +1197,12 @@ def sortear_desempate(desempate_id):
         else info
     )
 
-    return redirect(
-        url_for("admin.desempates")
-    )
+    return redirect(url_for("admin.desempates"))
 
 
 @admin_bp.route("/desempates/<int:desempate_id>/telao")
 @admin_obrigatorio
 def telao_desempate_admin(desempate_id):
     return redirect(
-        url_for(
-            "participantes.telao_desempate",
-            desempate_id=desempate_id,
-        ))
+        url_for("participantes.telao_desempate",
+            desempate_id=desempate_id,))

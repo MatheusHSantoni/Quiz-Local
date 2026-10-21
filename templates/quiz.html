@@ -52,6 +52,7 @@
                     <b>
                         <small>modo</small>TURBO
                     </b>
+
                     <span class="bolt">
                         <svg><use href="#raio"></use></svg>
                     </span>
@@ -65,7 +66,9 @@
             >
         </header>
 
+
         <main class="sala" id="sala">
+
             <section class="painel">
 
                 <div class="painel-topo">
@@ -73,6 +76,7 @@
                         <span class="bolt">
                             <svg><use href="#raio"></use></svg>
                         </span>
+
                         Participantes
                     </h2>
                 </div>
@@ -85,7 +89,6 @@
 
                         <div>
                             <div class="nome">{{ dupla["participante_1"] }}</div>
-
                             <div class="local">Participante 1</div>
                         </div>
                     </li>
@@ -93,14 +96,40 @@
 
                     <li class="pessoa eu">
                         <div class="av">{{ dupla["participante_2"][0] }}</div>
+
                         <div>
                             <div class="nome">{{ dupla["participante_2"] }}</div>
                             <div class="local">Participante 2</div>
                         </div>
                     </li>
+
                 </ul>
 
             </section>
+
+
+            {% if not desempate and fim_etapa %}
+
+                <section
+                    class="painel cronometro-painel"
+                    id="cronometro-container"
+                    data-fim-etapa="{{ fim_etapa.isoformat() }}"
+                >
+                    <div class="cronometro-info">
+                        <span class="cronometro-label">
+                            Tempo restante
+                        </span>
+
+                        <strong
+                            class="cronometro-tempo"
+                            id="cronometro"
+                        >
+                            10:00
+                        </strong>
+                    </div>
+                </section>
+
+            {% endif %}
 
 
             <!-- PERGUNTA -->
@@ -112,30 +141,53 @@
                             <svg><use href="#raio"></use></svg>
                         </span>
 
-                        {% if desempate is defined and desempate %}Morte súbita · {{ pergunta["area"] }}{% else %}Pergunta{% endif %}
+                        {% if desempate is defined and desempate %}
+                            Morte súbita · {{ pergunta["area"] }}
+                        {% else %}
+                            Pergunta
+                        {% endif %}
                     </h2>
                 </div>
 
 
-                <p class="enunciado">{{ pergunta["enunciado"] }}</p>
+                <p class="enunciado">
+                    {{ pergunta["enunciado"] }}
+                </p>
 
-                {% if pergunta["imagem"] %}<img src="{{ url_for('static', filename=pergunta['imagem']) }}" alt="Imagem da questão" style="max-width:100%;height:auto;margin:1rem 0">{% endif %}
 
-                <p class="comando">Escolha uma alternativa e confirme sua resposta.</p>
+                {% if pergunta["imagem"] %}
+
+                    <img
+                        src="{{ url_for('static', filename=pergunta['imagem']) }}"
+                        alt="Imagem da questão"
+                        style="max-width:100%;height:auto;margin:1rem 0"
+                    >
+
+                {% endif %}
+
+
+                <p class="comando">
+                    Escolha uma alternativa e confirme sua resposta.
+                </p>
 
 
                 <form
-                    action="{{ url_for('participantes.responder') }}" method="post">
+                    id="form-resposta"
+                    action="{{ url_for('participantes.responder') }}"
+                    method="post"
+                >
 
                     <input
                         type="hidden"
                         name="dupla_id"
-                        value="{{ dupla_id }}">
+                        value="{{ dupla_id }}"
+                    >
 
                     <input
                         type="hidden"
                         name="pergunta_id"
-                        value="{{ pergunta['id'] }}">
+                        value="{{ pergunta['id'] }}"
+                    >
 
 
                     {% set alternativas = [
@@ -154,37 +206,56 @@
                             <li>
                                 <label class="op">
 
-                                    <span class="letra">{{ letra }}</span>
-                                    <span>{{ texto }}</span>
+                                    <span class="letra">
+                                        {{ letra }}
+                                    </span>
+
+                                    <span>
+                                        {{ texto }}
+                                    </span>
+
                                     <input
                                         type="radio"
                                         name="alternativa"
                                         value="{{ letra }}"
-                                        required>
+                                        required
+                                    >
+
                                 </label>
                             </li>
+
                         {% endfor %}
+
                     </ul>
 
 
                     <div class="q-pe">
-                        <button class="btn" type="submit">
+
+                        <button
+                            class="btn"
+                            id="btn-confirmar"
+                            type="submit"
+                        >
                             Confirmar resposta
 
                             <svg viewBox="0 0 40 40">
                                 <use href="#play"></use>
                             </svg>
                         </button>
+
                     </div>
+
                 </form>
+
             </section>
+
         </main>
 
 
-        <footer class="rodape">
-            Maratona Enem · Estudo Play
-        </footer>
+        <footer class="rodape">Maratona Enem · Estudo Play</footer>
+
     </div>
+
 
     <script src="{{ url_for('static', filename='js/jogo.js') }}"></script>
 

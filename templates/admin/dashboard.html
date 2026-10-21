@@ -1,13 +1,257 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin - Maratona ENEM</title><link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}"></head><body><div class="wrap"><main>
-{% with ms=get_flashed_messages() %}{% for m in ms %}<p class="admin-mensagem">{{m}}</p>{% endfor %}{% endwith %}
-<section class="painel"><h1>Painel administrativo</h1><p>Controle as questões, duplas, etapas e o ranking.</p></section>
-<section class="admin-resumo">
-<div class="painel"><h2>Questões</h2><strong>{{total_perguntas}}</strong><p>LC {{prontidao.LC}} · CH {{prontidao.CH}} · CN {{prontidao.CN}} · MT {{prontidao.MT}} principais ativas</p><a class="btn" href="{{url_for('admin.perguntas')}}">Gerenciar questões</a></div>
-<div class="painel"><h2>Duplas</h2><strong>{{total_duplas}}</strong><p>duplas cadastradas</p><a class="btn" href="{{url_for('admin.duplas')}}">Gerenciar duplas</a></div>
-<div class="painel"><h2>Aplicação</h2><strong>{% if etapa_ativa==1 %}Etapa 1{% elif etapa_ativa==2 %}Etapa 2{% else %}Pausada{% endif %}</strong><p>Etapa 1: LC + CH · Etapa 2: CN + MT</p>
-<form action="{{url_for('admin.definir_etapa',etapa=1)}}" method="post" style="display:inline"><button class="btn">Abrir etapa 1</button></form>
-<form action="{{url_for('admin.definir_etapa',etapa=2)}}" method="post" style="display:inline"><button class="btn">Abrir etapa 2</button></form>
-<form action="{{url_for('admin.definir_etapa',etapa=0)}}" method="post" style="display:inline"><button class="btn ranking-btn-secundario">Pausar</button></form></div>
-{% if resumo_ranking.grupos_empate %}<div class="painel desempate-destaque"><h2>Morte súbita</h2><strong>{{resumo_ranking.grupos_empate}} empate(s) pendente(s)</strong><p>{{resumo_ranking.duplas_empatadas}} dupla(s) aguardando desempate</p><a class="btn" href="{{url_for('admin.desempates')}}">Gerenciar desempate</a></div>{% endif %}
-<div class="painel"><h2>Ranking</h2><strong>{{'Liberado' if ranking_liberado else 'Bloqueado'}}</strong><p>{{resumo_ranking.elegiveis}} aptas · {{resumo_ranking.incompletas}} incompletas{% if resumo_ranking.grupos_empate %} · {{resumo_ranking.grupos_empate}} empate(s){% endif %}</p><div class="admin-ranking-acoes"><a class="btn ranking-btn-secundario" href="{{url_for('admin.ranking_preview')}}">Ver prévia</a><form action="{{url_for('admin.ranking_acao',acao='bloquear' if ranking_liberado else 'liberar')}}" method="post"><button class="btn">{{'Bloquear' if ranking_liberado else 'Liberar'}} ranking</button></form></div></div>
-</section><p><a href="{{url_for('admin.logout')}}">Sair</a></p></main></div></body></html>
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Admin - Maratona ENEM</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="wrap">
+    <main>
+
+        {% with ms = get_flashed_messages() %}
+            {% for m in ms %}
+                <p class="admin-mensagem">{{ m }}</p>
+            {% endfor %}
+        {% endwith %}
+
+
+        <section class="painel">
+            <h1>Painel administrativo</h1>
+
+            <p>
+                Controle as questões, duplas, etapas,
+                cronômetro e o ranking.
+            </p>
+        </section>
+
+
+        <section class="admin-resumo">
+
+            <div class="painel">
+                <h2>Questões</h2>
+
+                <strong>{{ total_perguntas }}</strong>
+
+                <p>
+                    LC {{ prontidao.LC }} ·
+                    CH {{ prontidao.CH }} ·
+                    CN {{ prontidao.CN }} ·
+                    MT {{ prontidao.MT }}
+                    principais ativas
+                </p>
+
+                <a
+                    class="btn"
+                    href="{{ url_for('admin.perguntas') }}"
+                >
+                    Gerenciar questões
+                </a>
+            </div>
+
+
+            <div class="painel">
+                <h2>Duplas</h2>
+
+                <strong>{{ total_duplas }}</strong>
+
+                <p>duplas cadastradas</p>
+
+                <a
+                    class="btn"
+                    href="{{ url_for('admin.duplas') }}"
+                >
+                    Gerenciar duplas
+                </a>
+            </div>
+
+
+            <div class="painel">
+                <h2>Aplicação</h2>
+
+                <strong>
+                    {% if etapa_ativa == 1 %}
+                        Etapa 1
+                    {% elif etapa_ativa == 2 %}
+                        Etapa 2
+                    {% else %}
+                        Pausada
+                    {% endif %}
+                </strong>
+
+                <p>
+                    Etapa 1: LC + CH ·
+                    Etapa 2: CN + MT
+                </p>
+
+                <form
+                    action="{{ url_for('admin.definir_etapa', etapa=1) }}"
+                    method="post"
+                    style="display:inline"
+                >
+                    <button class="btn">
+                        Abrir etapa 1
+                    </button>
+                </form>
+
+                <form
+                    action="{{ url_for('admin.definir_etapa', etapa=2) }}"
+                    method="post"
+                    style="display:inline"
+                >
+                    <button class="btn">
+                        Abrir etapa 2
+                    </button>
+                </form>
+
+                <form
+                    action="{{ url_for('admin.definir_etapa', etapa=0) }}"
+                    method="post"
+                    style="display:inline"
+                >
+                    <button class="btn ranking-btn-secundario">
+                        Pausar
+                    </button>
+                </form>
+            </div>
+
+
+            <div class="painel">
+                <h2>Cronômetro</h2>
+
+                {% if etapa_ativa not in (1, 2) %}
+
+                    <strong>Aguardando etapa</strong>
+
+                    <p>
+                        Abra uma etapa antes de iniciar os 10 minutos.
+                    </p>
+
+                {% elif fim_etapa %}
+
+                    <strong>Cronômetro ativo</strong>
+
+                    <p>
+                        Os participantes já estão dentro
+                        do período de resposta.
+                    </p>
+
+                    <form
+                        action="{{ url_for('admin.encerrar_timer') }}"
+                        method="post"
+                    >
+                        <button class="btn ranking-btn-secundario">
+                            Encerrar cronômetro
+                        </button>
+                    </form>
+
+                {% else %}
+
+                    <strong>Não iniciado</strong>
+
+                    <p>
+                        A etapa está liberada, mas o tempo
+                        ainda não começou.
+                    </p>
+
+                    <form
+                        action="{{ url_for('admin.iniciar_timer') }}"
+                        method="post"
+                    >
+                        <button class="btn">
+                            Iniciar 10 minutos
+                        </button>
+                    </form>
+
+                {% endif %}
+            </div>
+
+
+            {% if resumo_ranking.grupos_empate %}
+
+                <div class="painel desempate-destaque">
+                    <h2>Morte súbita</h2>
+
+                    <strong>
+                        {{ resumo_ranking.grupos_empate }}
+                        empate(s) pendente(s)
+                    </strong>
+
+                    <p>
+                        {{ resumo_ranking.duplas_empatadas }}
+                        dupla(s) aguardando desempate
+                    </p>
+
+                    <a
+                        class="btn"
+                        href="{{ url_for('admin.desempates') }}"
+                    >
+                        Gerenciar desempate
+                    </a>
+                </div>
+
+            {% endif %}
+
+
+            <div class="painel">
+                <h2>Ranking</h2>
+
+                <strong>
+                    {{ 'Liberado' if ranking_liberado else 'Bloqueado' }}
+                </strong>
+
+                <p>
+                    {{ resumo_ranking.elegiveis }} aptas ·
+                    {{ resumo_ranking.incompletas }} incompletas
+
+                    {% if resumo_ranking.grupos_empate %}
+                        · {{ resumo_ranking.grupos_empate }} empate(s)
+                    {% endif %}
+                </p>
+
+                <div class="admin-ranking-acoes">
+
+                    <a
+                        class="btn ranking-btn-secundario"
+                        href="{{ url_for('admin.ranking_preview') }}"
+                    >
+                        Ver prévia
+                    </a>
+
+                    <form
+                        action="{{ url_for(
+                            'admin.ranking_acao',
+                            acao='bloquear' if ranking_liberado else 'liberar'
+                        ) }}"
+                        method="post"
+                    >
+                        <button class="btn">
+                            {{ 'Bloquear' if ranking_liberado else 'Liberar' }}
+                            ranking
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+        </section>
+
+
+        <p>
+            <a href="{{ url_for('admin.logout') }}">Sair</a>
+        </p>
+
+    </main>
+</div>
+
+</body>
+</html>

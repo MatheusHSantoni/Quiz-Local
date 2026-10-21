@@ -1,16 +1,29 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
+
 <head>
 
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Ranking - Maratona Enem</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Figtree:wght@400;500;600;700;800&display=swap">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
+
 
 <body>
 
@@ -32,7 +45,20 @@
                     stroke="#f68d1e"
                     stroke-width="1">
                 </path>
+
             </symbol>
+
+
+            <symbol
+                id="play"
+                viewBox="0 0 40 40">
+
+                <path
+                    d="M9 6.5c0-2.6 2.8-4.2 5-2.9l20 12.5c2.1 1.3 2.1 4.4 0 5.8l-20 12.5c-2.2 1.4-5-.2-5-2.9z">
+                </path>
+
+            </symbol>
+
         </defs>
 
     </svg>
@@ -48,10 +74,19 @@
 
         <header class="topo">
 
-            <a class="lockup" href="#podio" aria-label="Maratona Enem">
+            <a
+                class="lockup"
+                href="#podio"
+                aria-label="Maratona Enem">
 
-                <span class="l1">MARATONA</span>
-                <span class="l2">ENEM</span>
+                <span class="l1">
+                    MARATONA
+                </span>
+
+                <span class="l2">
+                    ENEM
+                </span>
+
                 <span class="turbo">
 
                     <b>
@@ -72,7 +107,10 @@
             </a>
 
 
-            <img class="ep" src="{{ url_for('static', filename='img/estudo-play.png') }}" alt="Estudo Play">
+            <img
+                class="ep"
+                src="{{ url_for('static', filename='img/estudo-play.png') }}"
+                alt="Estudo Play">
 
         </header>
 
@@ -89,16 +127,57 @@
                             <use href="#raio"></use>
                         </svg>
 
-                    </span>Ranking</span>
+                    </span>
+
+                    Ranking final
+
+                </span>
 
 
                 <h1>
-                    <span class="lar"> Conheça o</span>
-                    <span class="rox"> Top 3!</span>
+
+                    <span class="lar">
+                        Qual foi a sua
+                    </span>
+
+                    <span class="rox">
+                        posição?
+                    </span>
+
                 </h1>
 
 
-                <p class="sub"> Confira as três duplas que estão no topo da Maratona Enem.</p>
+                <p class="sub">
+                    O resultado da Maratona Enem foi liberado.
+                    Encontre sua dupla e descubra sua classificação.
+                </p>
+
+
+                <div class="ranking-acoes">
+
+                    <button
+                        class="btn"
+                        type="button"
+                        id="btn-revelar">
+
+                        Revelar classificação
+
+                        <svg viewBox="0 0 40 40">
+                            <use href="#play"></use>
+                        </svg>
+
+                    </button>
+
+
+                    <a
+                        class="btn ranking-btn-secundario"
+                        href="#classificacao">
+
+                        Procurar minha dupla
+
+                    </a>
+
+                </div>
 
             </div>
 
@@ -111,18 +190,29 @@
 
                     <svg viewBox="0 0 400 420">
 
-                        <path d="M120 70c0-30 30-46 56-31l200 140c24 17 24 50 0 66L176 385c-26 16-56 0-56-31z"
+                        <path
+                            d="M120 70c0-30 30-46 56-31l200 140c24 17 24 50 0 66L176 385c-26 16-56 0-56-31z"
                             fill="#f4aa12">
                         </path>
 
-                        <path d="M90 60c0-32 34-50 62-33l210 150c26 18 26 56 0 74L152 401c-28 18-62-1-62-33z"
+                        <path
+                            d="M90 60c0-32 34-50 62-33l210 150c26 18 26 56 0 74L152 401c-28 18-62-1-62-33z"
                             fill="#514076">
                         </path>
+
                     </svg>
+
                 </div>
 
-                <span class="ranking-interrogacao">?</span>
-                <img class="aluno" src="{{ url_for('static', filename='img/aluno.png') }}" alt="">
+                <span class="ranking-interrogacao">
+                    ?
+                </span>
+
+                <img
+                    class="aluno"
+                    src="{{ url_for('static', filename='img/aluno.png') }}"
+                    alt="">
+
             </div>
 
         </section>
@@ -144,11 +234,19 @@
                                 <use href="#raio"></use>
                             </svg>
 
-                        </span>Pódio</span>
+                        </span>
+
+                        Pódio
+
+                    </span>
 
 
-                    <h2>Os três primeiros colocados</h2>
+                    <h2>
+                        Os três primeiros colocados
+                    </h2>
+
                 </div>
+
             </div>
 
 
@@ -162,14 +260,17 @@
 
                         {% set segundo = ranking[1] %}
 
-                        <div class="quem">
+                        <div
+                            class="quem"
+                            data-nome="{{ segundo['participante_1'] }} e {{ segundo['participante_2'] }}"
+                            data-pontos="{{ segundo['total_pontos'] }}">
 
-                            <span class="av">2</span>
-                            <span class="nm">
-                                {{ segundo["participante_1"] }}
-                                e
-                                {{ segundo["participante_2"] }}
+                            <span class="av">
+                                ?
                             </span>
+
+                            <span class="nm"></span>
+
                         </div>
 
                     {% endif %}
@@ -177,10 +278,14 @@
 
                     <div class="degrau">
 
-                        <b>2º</b>
+                        <b>
+                            2º
+                        </b>
 
                         <span></span>
+
                     </div>
+
                 </div>
 
 
@@ -192,15 +297,16 @@
 
                         {% set primeiro = ranking[0] %}
 
-                        <div class="quem">
+                        <div
+                            class="quem"
+                            data-nome="{{ primeiro['participante_1'] }} e {{ primeiro['participante_2'] }}"
+                            data-pontos="{{ primeiro['total_pontos'] }}">
 
-                            <span class="av">1</span>
-
-                            <span class="nm">
-                                {{ primeiro["participante_1"] }}
-                                e
-                                {{ primeiro["participante_2"] }}
+                            <span class="av">
+                                ?
                             </span>
+
+                            <span class="nm"></span>
 
                         </div>
 
@@ -209,7 +315,10 @@
 
                     <div class="degrau">
 
-                        <b>1º</b>
+                        <b>
+                            1º
+                        </b>
+
                         <span></span>
 
                     </div>
@@ -225,14 +334,16 @@
 
                         {% set terceiro = ranking[2] %}
 
-                        <div class="quem">
+                        <div
+                            class="quem"
+                            data-nome="{{ terceiro['participante_1'] }} e {{ terceiro['participante_2'] }}"
+                            data-pontos="{{ terceiro['total_pontos'] }}">
 
-                            <span class="av">3</span>
-                            <span class="nm">
-                                {{ terceiro["participante_1"] }}
-                                e
-                                {{ terceiro["participante_2"] }}
+                            <span class="av">
+                                ?
                             </span>
+
+                            <span class="nm"></span>
 
                         </div>
 
@@ -241,18 +352,182 @@
 
                     <div class="degrau">
 
-                        <b>3º</b>
+                        <b>
+                            3º
+                        </b>
+
                         <span></span>
+
                     </div>
+
                 </div>
+
             </div>
+
+
+            <p
+                class="anuncio"
+                id="anuncio"
+                aria-live="polite">
+            </p>
+
+        </section>
+
+
+        <section
+            class="ranking-secao"
+            id="classificacao">
+
+            <div class="ranking-secao-cabecalho">
+
+                <div>
+
+                    <span class="selo">
+
+                        <span class="bolt">
+
+                            <svg>
+                                <use href="#raio"></use>
+                            </svg>
+
+                        </span>
+
+                        Classificação
+
+                    </span>
+
+
+                    <h2>
+                        Encontre sua dupla
+                    </h2>
+
+                    <p>
+                        Procure pelos nomes e vire a carta para descobrir a posição.
+                    </p>
+
+                </div>
+
+
+                <span class="ranking-contador">
+                    {{ ranking|length }} duplas
+                </span>
+
+            </div>
+
+
+            <div class="ranking-busca">
+
+                <label
+                    class="ranking-campo"
+                    for="busca-ranking">
+
+                    <span class="sr">
+                        Buscar dupla
+                    </span>
+
+                    <input
+                        id="busca-ranking"
+                        type="search"
+                        placeholder="Digite o nome de um participante"
+                        autocomplete="off">
+
+                </label>
+
+            </div>
+
+
+            <p
+                class="ranking-dica"
+                id="ranking-dica"
+                aria-live="polite">
+            </p>
+
+
+            <div
+                class="mural"
+                id="mural">
+
+                {% for dupla in ranking %}
+
+                    {% set nome_dupla =
+                        dupla["participante_1"]
+                        ~ " e "
+                        ~ dupla["participante_2"]
+                    %}
+
+                    <button
+                        class="carta"
+                        type="button"
+                        data-posicao="{{ dupla['posicao'] }}"
+                        data-nome="{{ nome_dupla }}"
+                        data-pontos="{{ dupla['total_pontos'] }}"
+                        aria-label="{{ nome_dupla }}, posição oculta">
+
+                        <span class="carta-interna">
+
+                            <span class="carta-face carta-frente">
+
+                                <span class="carta-interrogacao">
+                                    ?
+                                </span>
+
+                                <span class="carta-nome">
+                                    {{ nome_dupla }}
+                                </span>
+
+                                <span class="carta-acao">
+                                    Virar
+                                </span>
+
+                            </span>
+
+
+                            <span
+                                class="
+                                    carta-face
+                                    carta-verso
+
+                                    {% if dupla['posicao'] <= 3 %}
+                                        top3
+                                    {% elif dupla['posicao'] <= 10 %}
+                                        top10
+                                    {% endif %}
+                                ">
+
+                                <span class="carta-posicao">
+                                    {{ dupla["posicao"] }}º
+                                </span>
+
+                                <span class="carta-nome">
+                                    {{ nome_dupla }}
+                                </span>
+
+                            </span>
+
+                        </span>
+
+                    </button>
+
+                {% endfor %}
+
+            </div>
+
         </section>
 
 
         <footer class="rodape">
 
-            <span>Maratona Enem · Estudo Play</span>
+            <span>
+                Maratona Enem · Estudo Play
+            </span>
+
         </footer>
+
     </div>
+
+
+    <script src="{{ url_for('static', filename='js/ranking.js') }}"></script>
+
 </body>
+
 </html>
