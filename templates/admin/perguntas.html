@@ -12,38 +12,82 @@
     <div><h1>Questões</h1><p>{{perguntas|length}} cadastradas.</p></div>
     <a class="btn" href="{{url_for('admin.nova_pergunta')}}">Nova questão</a>
   </div>
-  {% with ms=get_flashed_messages() %}{% for m in ms %}<p class="admin-mensagem">{{m}}</p>{% endfor %}{% endwith %}
+
+  {% with ms=get_flashed_messages() %}
+    {% for m in ms %}
+      <p class="admin-mensagem">{{m}}</p>
+    {% endfor %}
+  {% endwith %}
 
   <div class="admin-tabela-wrap">
     <table class="admin-tabela-questoes">
-      <thead><tr>
-        <th>Enunciado</th><th>Alternativa correta</th><th>Área</th><th>Ordem</th><th>Ativa / Reserva</th><th>Ações</th>
-      </tr></thead>
+      <thead>
+        <tr>
+          <th>Enunciado</th>
+          <th>Alternativa correta</th>
+          <th>Área</th>
+          <th>Ordem</th>
+          <th>Ativa / Reserva</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
       <tbody>
       {% for p in perguntas %}
         {% set letra=p.alternativa_correta|lower %}
+
         <tr>
-          <td class="questao-enunciado"><a href="{{url_for('admin.visualizar_pergunta',pergunta_id=p.id)}}">{{p.enunciado}}</a>{% if p.total_respostas %}<small>{{p.total_respostas}} resposta{{'s' if p.total_respostas != 1 else ''}}</small>{% endif %}</td>
-          <td><span class="resposta-correta-mini">{{p.alternativa_correta}}</span> {{p['alternativa_'+letra]}}</td>
-          <td><span class="badge-area">{{p.area}}</span></td>
+          <td class="questao-enunciado">
+            <a href="{{url_for('admin.visualizar_pergunta',pergunta_id=p.id)}}">{{p.enunciado}}</a>
+
+            {% if p.total_respostas %}
+              <small>{{p.total_respostas}} resposta{{'s' if p.total_respostas != 1 else ''}}</small>
+            {% endif %}
+          </td>
+
+          <td>
+            <span class="resposta-correta-mini">{{p.alternativa_correta}}</span>
+            {{p['alternativa_'+letra]}}
+          </td>
+
+          <td>
+            <span class="badge-area">{{p.area}}</span>
+          </td>
+
           <td>{{p.ordem}}</td>
+
           <td>
             <form action="{{url_for('admin.alternar_status_pergunta',pergunta_id=p.id)}}" method="post">
               <button class="status-toggle {{'status-ativa' if p.tipo=='PRINCIPAL' and p.ativa else 'status-reserva'}}" type="submit" aria-label="Alterar status da questão">
-                <span class="status-dot"></span>{{'Ativa' if p.tipo=='PRINCIPAL' and p.ativa else 'Reserva'}}
+                <span class="status-dot"></span>
+                {{'Ativa' if p.tipo=='PRINCIPAL' and p.ativa else 'Reserva'}}
               </button>
             </form>
           </td>
-          <td><div class="acoes-tabela">
-            <a href="{{url_for('admin.visualizar_pergunta',pergunta_id=p.id)}}">Visualizar</a>
-            {% if not p.total_respostas %}<a href="{{url_for('admin.editar_pergunta',pergunta_id=p.id)}}">Editar</a>{% else %}<span class="acao-bloqueada" title="Questão já respondida">Editar</span>{% endif %}
-            {% if not p.total_respostas %}<form action="{{url_for('admin.excluir_pergunta',pergunta_id=p.id)}}" method="post" onsubmit="return confirm('Excluir esta questão?')"><button type="submit" class="acao-link acao-perigo">Excluir</button></form>{% else %}<span class="acao-bloqueada" title="Questão já respondida">Excluir</span>{% endif %}
-          </div></td>
+
+          <td>
+            <div class="acoes-tabela">
+              <a href="{{url_for('admin.visualizar_pergunta',pergunta_id=p.id)}}">Visualizar</a>
+
+              <a href="{{url_for('admin.editar_pergunta',pergunta_id=p.id)}}">Editar</a>
+
+              <form action="{{url_for('admin.excluir_pergunta',pergunta_id=p.id)}}" method="post" onsubmit="return confirm('Excluir esta questão?')">
+                <button type="submit" class="acao-link acao-perigo">Excluir</button>
+              </form>
+            </div>
+          </td>
         </tr>
-      {% else %}<tr><td colspan="6">Nenhuma questão cadastrada.</td></tr>{% endfor %}
+
+      {% else %}
+        <tr>
+          <td colspan="6">Nenhuma questão cadastrada.</td>
+        </tr>
+      {% endfor %}
       </tbody>
     </table>
   </div>
+
   <p><a href="{{url_for('admin.dashboard')}}">Voltar ao painel</a></p>
 </section></main></div>
-</body></html>
+</body>
+</html>

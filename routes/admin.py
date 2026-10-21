@@ -458,33 +458,6 @@ def editar_pergunta(pergunta_id):
 
         return ("Pergunta não encontrada.", 404)
 
-    total_respostas = con.execute(
-        """
-        SELECT COUNT(*) AS total
-        FROM respostas
-        WHERE pergunta_id=%s
-        """,
-        (pergunta_id,),
-    ).fetchone()["total"]
-
-    if total_respostas > 0:
-        con.close()
-
-        flash(
-            "Não é possível editar uma pergunta que já foi respondida."
-        )
-
-        return redirect(url_for("admin.perguntas"))
-
-    if pergunta_usada_em_desempate(con, pergunta_id):
-        con.close()
-
-        flash(
-            "Não é possível editar uma pergunta que já foi usada em um desempate."
-        )
-
-        return redirect(url_for("admin.perguntas"))
-
     if request.method == "POST":
         d = dados_pergunta_form()
         erro = validar_pergunta(d)
@@ -629,15 +602,6 @@ def alternar_status_pergunta(pergunta_id):
 
         return ("Pergunta não encontrada.", 404)
 
-    if pergunta_usada_em_desempate(con, pergunta_id):
-        con.close()
-
-        flash(
-            "Não é possível alterar uma pergunta que já foi usada em um desempate."
-        )
-
-        return redirect(url_for("admin.perguntas"))
-
     # Na interface operacional, ATIVA = principal do quiz; RESERVA = fora do quiz normal.
     if pergunta["tipo"] == "PRINCIPAL" and pergunta["ativa"]:
         novo_tipo, nova_ativa = "RESERVA", 0
@@ -693,42 +657,47 @@ def alternar_status_pergunta(pergunta_id):
 def excluir_pergunta(pergunta_id):
     con = conectar()
 
-    if pergunta_usada_em_desempate(con, pergunta_id):
-        con.close()
-
-        flash(
-            "Não é possível excluir uma pergunta que já foi usada em um desempate."
+    try:
+        con.execute(
+            """
+            DELETE FROM respostas
+            WHERE pergunta_id=%s
+            """,
+            (pergunta_id,),
         )
 
-        return redirect(url_for("admin.perguntas"))
-
-    total_respostas = con.execute(
-        """
-        SELECT COUNT(*) AS total
-        FROM respostas
-        WHERE pergunta_id=%s
-        """,
-        (pergunta_id,),
-    ).fetchone()["total"]
-
-    if total_respostas:
-        con.close()
-
-        flash(
-            "Não é possível excluir uma pergunta que já foi respondida."
+        con.execute(
+            """
+            DELETE FROM questoes_iniciadas
+            WHERE pergunta_id=%s
+            """,
+            (pergunta_id,),
         )
 
-        return redirect(url_for("admin.perguntas"))
+        con.execute(
+            """
+            DELETE FROM desempate_rodadas
+            WHERE pergunta_id=%s
+            """,
+            (pergunta_id,),
+        )
 
-    con.execute(
-        """
-        DELETE FROM perguntas
-        WHERE id=%s
-        """,
-        (pergunta_id,),
-    )
+        con.execute(
+            """
+            DELETE FROM perguntas
+            WHERE id=%s
+            """,
+            (pergunta_id,),
+        )
 
-    con.commit()
+        con.commit()
+
+    except Exception:
+        con.rollback()
+        con.close()
+
+        raise
+
     con.close()
 
     flash("Pergunta excluída com sucesso.")
@@ -1041,32 +1010,56 @@ def respostas_dupla(dupla_id):
 def excluir_dupla(dupla_id):
     con = conectar()
 
-    if dupla_participou_desempate(con, dupla_id):
-        con.close()
-
-        flash(
-            "Não é possível excluir uma dupla que já participou de um desempate."
+    try:
+        con.execute(
+            """
+            DELETE FROM respostas
+            WHERE dupla_id=%s
+            """,
+            (dupla_id,),
         )
 
-        return redirect(url_for("admin.duplas"))
+        con.execute(
+            """
+            DELETE FROM questoes_iniciadas
+            WHERE dupla_id=%s
+            """,
+            (dupla_id,),
+        )
 
-    con.execute(
-        """
-        DELETE FROM respostas
-        WHERE dupla_id=%s
-        """,
-        (dupla_id,),
-    )
+        con.execute(
+            """
+            DELETE FROM desempate_membros
+            WHERE dupla_id=%s
+            """,
+            (dupla_id,),
+        )
 
-    con.execute(
-        """
-        DELETE FROM duplas
-        WHERE id=%s
-        """,
-        (dupla_id,),
-    )
+        con.execute(
+            """
+            UPDATE desempates
+            SET vencedor_dupla_id=NULL
+            WHERE vencedor_dupla_id=%s
+            """,
+            (dupla_id,),
+        )
 
-    con.commit()
+        con.execute(
+            """
+            DELETE FROM duplas
+            WHERE id=%s
+            """,
+            (dupla_id,),
+        )
+
+        con.commit()
+
+    except Exception:
+        con.rollback()
+        con.close()
+
+        raise
+
     con.close()
 
     flash("Dupla excluída.")
@@ -1221,6 +1214,5 @@ def sortear_desempate(desempate_id):
 @admin_obrigatorio
 def telao_desempate_admin(desempate_id):
     return redirect(
-        url_for(
-            "participantes.telao_desempate",
+        url_for("participantes.telao_desempate",
             desempate_id=desempate_id,))
