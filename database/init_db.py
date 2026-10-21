@@ -5,7 +5,6 @@ def criar_banco():
     conexao = conectar()
     cursor = conexao.cursor()
 
-    # Impede dois processos de inicializarem o banco ao mesmo tempo.
     cursor.execute("""
         SELECT pg_advisory_xact_lock(741258963)
     """)
@@ -76,6 +75,7 @@ def criar_banco():
             respondida_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             fase TEXT NOT NULL DEFAULT 'REGULAR',
             rodada_desempate INTEGER,
+            tempo_resposta_ms BIGINT,
 
             FOREIGN KEY (dupla_id)
                 REFERENCES duplas(id),
@@ -87,10 +87,32 @@ def criar_banco():
         )""")
 
     cursor.execute("""
+        ALTER TABLE respostas
+        ADD COLUMN IF NOT EXISTS tempo_resposta_ms BIGINT
+    """)
+
+    cursor.execute("""
         UPDATE respostas
         SET fase = 'REGULAR'
         WHERE fase IS NULL OR fase = ''
     """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS questoes_iniciadas (
+            dupla_id INTEGER NOT NULL,
+            pergunta_id INTEGER NOT NULL,
+            iniciada_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+            PRIMARY KEY (dupla_id, pergunta_id),
+
+            FOREIGN KEY (dupla_id)
+                REFERENCES duplas(id)
+                ON DELETE CASCADE,
+
+            FOREIGN KEY (pergunta_id)
+                REFERENCES perguntas(id)
+                ON DELETE CASCADE
+        )""")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS configuracoes (

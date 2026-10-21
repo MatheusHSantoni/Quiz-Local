@@ -292,7 +292,8 @@ def definir_etapa(etapa):
             """
             UPDATE configuracoes
             SET etapa_ativa=%s,
-                fim_etapa=NULL
+                fim_etapa=NULL,
+                ranking_liberado=0
             WHERE id=1
             """,
             (etapa,),
@@ -1125,7 +1126,7 @@ def ranking_acao(acao):
     return redirect(url_for("admin.dashboard"))
 
 
-# BLOCO 5 — CRONÔMETRO
+# BLOCO 5 — TIMER
 
 @admin_bp.route("/timer/iniciar", methods=["POST"])
 @admin_obrigatorio
@@ -1174,7 +1175,8 @@ def encerrar_timer():
     con.execute("""
         UPDATE configuracoes
         SET fim_etapa = NULL
-        WHERE id=1""")
+        WHERE id=1
+    """)
 
     con.commit()
     con.close()
@@ -1182,6 +1184,19 @@ def encerrar_timer():
     flash("Cronômetro encerrado.")
 
     return redirect(url_for("admin.dashboard"))
+
+
+# BLOCO 6 — MORTE SÚBITA
+
+@admin_bp.route("/desempates")
+@admin_obrigatorio
+def desempates():
+    from services.desempate import sessoes_pendentes
+
+    return render_template(
+        "admin/desempates.html",
+        sessoes=sessoes_pendentes(),
+    )
 
 
 @admin_bp.route("/desempates/<int:desempate_id>/sortear", methods=["POST"])
@@ -1197,12 +1212,15 @@ def sortear_desempate(desempate_id):
         else info
     )
 
-    return redirect(url_for("admin.desempates"))
+    return redirect(
+        url_for("admin.desempates")
+    )
 
 
 @admin_bp.route("/desempates/<int:desempate_id>/telao")
 @admin_obrigatorio
 def telao_desempate_admin(desempate_id):
     return redirect(
-        url_for("participantes.telao_desempate",
+        url_for(
+            "participantes.telao_desempate",
             desempate_id=desempate_id,))

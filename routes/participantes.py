@@ -366,10 +366,28 @@ def quiz(dupla_id):
         dupla_id,
         etapa,)
 
-    conexao.close()
-
     if pergunta is None:
+        conexao.close()
+
         return redirect(url_for("participantes.aguardando",dupla_id=dupla_id,))
+
+    cursor.execute(
+        """
+        INSERT INTO questoes_iniciadas (
+            dupla_id,
+            pergunta_id
+        )
+        VALUES (%s,%s)
+        ON CONFLICT (dupla_id, pergunta_id) DO NOTHING
+        """,
+        (
+            dupla_id,
+            pergunta["id"],
+        ),
+    )
+
+    conexao.commit()
+    conexao.close()
 
     return render_template("quiz.html", dupla=dupla, dupla_id=dupla_id, pergunta=pergunta,etapa=etapa, desempate=False,fim_etapa=configuracao["fim_etapa"],)
 
@@ -496,6 +514,35 @@ def responder():
 
         return ("Esta não é a pergunta atual do time.",400,)
 
+    registro_tempo = cursor.execute(
+        """
+        SELECT GREATEST(
+            0,
+            FLOOR(
+                EXTRACT(
+                    EPOCH FROM (
+                        clock_timestamp() - iniciada_em
+                    )
+                ) * 1000
+            )
+        )::BIGINT AS tempo_resposta_ms
+        FROM questoes_iniciadas
+        WHERE dupla_id=%s
+          AND pergunta_id=%s
+        """,
+        (
+            dupla_id,
+            pergunta_id,
+        ),
+    ).fetchone()
+
+    if registro_tempo is None:
+        conexao.close()
+
+        return ("Não foi possível determinar o início desta questão.",409,)
+
+    tempo_resposta_ms = registro_tempo["tempo_resposta_ms"]
+
     correta = int(alternativa == pergunta_atual["alternativa_correta"])
 
     try:
@@ -507,9 +554,10 @@ def responder():
                 alternativa_escolhida,
                 correta,
                 pontos,
-                fase
+                fase,
+                tempo_resposta_ms
             )
-            VALUES (%s,%s,%s,%s,%s,%s)
+            VALUES (%s,%s,%s,%s,%s,%s,%s)
             """,
             (
                 dupla_id,
@@ -518,6 +566,7 @@ def responder():
                 correta,
                 100 if correta else 0,
                 "REGULAR",
+                tempo_resposta_ms,
             ),)
 
         conexao.commit()
@@ -565,7 +614,9 @@ def aguardando(dupla_id):
     if dupla is None:
         conexao.close()
 
-        return ("Time não encontrado.",404,)
+        return (
+            "Time não encontrado.",
+            404,)
 
     configuracao = _buscar_configuracao(
         cursor)
@@ -642,8 +693,8 @@ def aguardando(dupla_id):
             cursor,
             dupla_id,
             etapa_ativa,
-        ) is not None):
-
+        ) is not None
+    ):
         conexao.close()
 
         return redirect(
@@ -724,7 +775,9 @@ def telao_desempate(desempate_id):
 def status_desempate(desempate_id):
     from services.desempate import status_telao
 
-    estado = status_telao(desempate_id)
+    estado = status_telao(
+        desempate_id
+    )
 
     if not estado:
         return jsonify({
