@@ -275,8 +275,8 @@ def definir_etapa(etapa):
                 (area,),
             ).fetchone()["total"]
 
-            if n < 2:
-                faltas.append(f"{area}: {n}/2")
+            if n < 1:
+               faltas.append(f"{area}: nenhuma questão ativa")
 
         if faltas:
             con.close()

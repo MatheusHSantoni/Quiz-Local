@@ -30,7 +30,6 @@ def _perguntas_oficiais_etapa(cursor, etapa):
               AND tipo='PRINCIPAL'
               AND ativa=1
             ORDER BY ordem, id
-            LIMIT 2
             """,
             (area,),
         ).fetchall()
@@ -46,7 +45,7 @@ def _proxima_pergunta(cursor, dupla_id, etapa):
     areas = AREAS_ETAPA[etapa]
     ids = _perguntas_oficiais_etapa(cursor, etapa)
 
-    if len(ids) < 4:
+    if len(ids) < 1:
         return None
 
     marcadores = ",".join(
@@ -99,7 +98,7 @@ def _etapa_concluida(cursor, dupla_id, etapa):
         cursor,
         etapa,)
 
-    if len(ids) < 4:
+    if len(ids) < 1:
         return False
 
     marcadores = ",".join(
@@ -120,7 +119,7 @@ def _etapa_concluida(cursor, dupla_id, etapa):
         ),
     ).fetchone()["total"]
 
-    return total == 4
+    return total == len(ids)
 
 
 def _buscar_configuracao(cursor):
